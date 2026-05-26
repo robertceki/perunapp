@@ -6,6 +6,7 @@ import { supabase } from "@/services/supabase/client";
 type AuthContextType = {
   session: Session | null;
   loading: boolean;
+  profile: any;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -13,6 +14,7 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType>({
   session: null,
   loading: true,
+  profile: null,
   login: async () => {},
   logout: async () => {},
 });
@@ -20,24 +22,41 @@ export const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<any>(null);
 
-  // 🔄 inicijalni session check
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
+      if (data.session?.user) {
+        fetchProfile(data.session.user.id);
+      }
       setLoading(false);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
       },
     );
 
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // 🔐 LOGIN FUNKCIJA (OVO SI TRAŽIO)
+  const fetchProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    setProfile(data || null);
+  };
+
   const login = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -63,10 +82,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       session,
       loading,
+      profile,
       login,
       logout,
     }),
-    [session, loading],
+    [session, loading, profile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
