@@ -1,51 +1,41 @@
-import { Tabs } from "expo-router";
-import { useEffect } from "react";
+import React, { useState } from "react";
+import { View } from "react-native";
 
-import { useAuth } from "@/hooks/useAuth";
+import AlertBar from "@/components/AlertBar";
+import DayFilter from "@/components/DayFilter";
+import Header from "@/components/Header";
+import { TrainingCard } from "@/components/TreiningCard";
 import { useTrainings } from "@/hooks/useTrainings";
-import { Text, View } from "react-native";
 
 export default function TabsLayout() {
-  const { fetchTrainings, bookedCount, reachedLimit } = useTrainings();
-  const { profile } = useAuth();
-  useEffect(() => {
-    console.log("Fetching trainings...");
-    fetchTrainings();
-  }, []);
-  return (
-    <>
-      {profile && (
-        <View
-          style={{
-            padding: 12,
-            backgroundColor: reachedLimit ? "#ffdddd" : "#eeeeee",
-          }}
-        >
-          <Text>
-            {bookedCount} / {profile.max_sessions_per_week} treninga prijavljeno
-          </Text>
+  const [selectedDay, setSelectedDay] = useState("monday");
 
-          {reachedLimit && (
-            <Text
-              style={{
-                color: "red",
-                marginTop: 4,
-              }}
-            >
-              Dostigli ste limit
-            </Text>
-          )}
-        </View>
-      )}
-      <Tabs screenOptions={{ headerShown: true }}>
-        <Tabs.Screen name="monday" options={{ title: "Ponedeljak" }} />
-        <Tabs.Screen name="tuesday" options={{ title: "Utorak" }} />
-        <Tabs.Screen name="wednesday" options={{ title: "Sreda" }} />
-        <Tabs.Screen name="thursday" options={{ title: "Četvrtak" }} />
-        <Tabs.Screen name="friday" options={{ title: "Petak" }} />
-        <Tabs.Screen name="saturday" options={{ title: "Subota" }} />
-        <Tabs.Screen name="index" options={{ href: null }} />
-      </Tabs>
-    </>
+  const { getTrainingsByDay } = useTrainings();
+
+  const data = getTrainingsByDay(selectedDay);
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      {/* HEADER */}
+      <Header />
+
+      {/* TOP FILTER NAV */}
+      <DayFilter selected={selectedDay} setSelected={setSelectedDay} />
+
+      {/* ALERT BAR */}
+      <AlertBar />
+
+      {/* CONTENT */}
+      <View
+        style={{
+          flex: 1,
+          padding: 16,
+        }}
+      >
+        {data.map((training) => (
+          <TrainingCard key={training.id} training={training} />
+        ))}
+      </View>
+    </View>
   );
 }

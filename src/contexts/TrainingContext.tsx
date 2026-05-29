@@ -2,7 +2,6 @@ import { createContext, useEffect, useMemo, useState } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/services/supabase/client";
-
 import { Training } from "@/types/Training";
 
 type TrainingContextType = {
@@ -11,8 +10,8 @@ type TrainingContextType = {
   fetchTrainings: () => Promise<void>;
   getTrainingsByDay: (day: string) => Training[];
   joinSession: (sessionId: string) => Promise<void>;
-  canJoinSession: () => boolean;
   leaveSession: (sessionId: string) => Promise<void>;
+  canJoinSession: () => boolean;
   reachedLimit: boolean;
   bookedCount: number;
 };
@@ -23,69 +22,95 @@ export const TrainingContext = createContext<TrainingContextType>({
   fetchTrainings: async () => {},
   getTrainingsByDay: () => [],
   joinSession: async () => {},
-  canJoinSession: () => false,
   leaveSession: async () => {},
+  canJoinSession: () => false,
   reachedLimit: false,
   bookedCount: 0,
 });
 
 export function TrainingProvider({ children }: { children: React.ReactNode }) {
   const { session, profile } = useAuth();
+
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // -------------------------
+  // FETCH
+  // -------------------------
   const fetchTrainings = async () => {
     setLoading(true);
+
     const { data, error } = await supabase
       .from("sessions")
       .select(
-        `*,session_participants (user_id,
-      profiles (
-        first_name,
-        last_name
-      ))`,
+        `*,session_participants (
+          user_id,
+          profiles (
+            first_name,
+            last_name
+          )
+        )`,
       )
-      .order("created_at", { ascending: false });
+      .order("created_at", {
+        ascending: false,
+      });
 
     if (error) {
-      console.error("Error fetching trainings:", error);
-    } else {
-      console.log("Fetched trainings:", data);
-      setTrainings(data as Training[]);
+      console.error(error);
+      setLoading(false);
+      return;
     }
+
+    // IMPORTANT: new reference
+    setTrainings([...(data as Training[])]);
+
     setLoading(false);
   };
 
-  const getTrainingsByDay = (day: string) => {
-    console.log("Filtering trainings for day:", day);
-    const t = trainings.filter((training) => training.day_of_week === day);
-    console.log("Trainings for day:", t);
-    return trainings.filter((training) => training.day_of_week === day);
+  useEffect(() => {
+    fetchTrainings();
+  }, []);
+
+  // -------------------------
+  // FILTER
+  // -------------------------
+  const getTrainingsByDay = (day: string) =>
+    trainings.filter((t) => t.day_of_week === day);
+
+  // -------------------------
+  // BOOKED COUNT
+  // -------------------------
+  const bookedCount = trainings
+    .flatMap((t) => t.session_participants)
+    .filter((p) => p.user_id === session?.user.id).length;
+
+  const reachedLimit = bookedCount >= (profile?.max_sessions_per_week ?? 0);
+
+  // -------------------------
+  // GUARD
+  // -------------------------
+  const canJoinSession = () => {
+    if (!session?.user.id || !profile) return false;
+
+    return bookedCount < (profile.max_sessions_per_week ?? 0);
   };
 
+  // -------------------------
+  // JOIN (SAFE - NO FAKE DATA)
+  // -------------------------
   const joinSession = async (sessionId: string) => {
     const userId = session?.user.id;
-
     if (!userId) return;
 
-    const allowed = await canJoinSession(sessionId);
+    if (!canJoinSession()) return;
 
-    if (!allowed) {
-      console.log("Limit reached");
-      return;
-    }
+    const target = trainings.find((t) => t.id === sessionId);
 
-    const { data: existing } = await supabase
-      .from("session_participants")
-      .select("id")
-      .eq("session_id", sessionId)
-      .eq("user_id", userId)
-      .maybeSingle();
+    const alreadyJoined = target?.session_participants.some(
+      (p) => p.user_id === userId,
+    );
 
-    if (existing) {
-      console.log("Already joined");
-      return;
-    }
+    if (alreadyJoined) return;
 
     const { error } = await supabase.from("session_participants").insert({
       session_id: sessionId,
@@ -93,16 +118,19 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error) {
-      console.log("Join error:", error);
+      console.log(error);
       return;
     }
 
+    // ALWAYS REFRESH (CONSISTENT STATE)
     await fetchTrainings();
   };
 
+  // -------------------------
+  // LEAVE
+  // -------------------------
   const leaveSession = async (sessionId: string) => {
     const userId = session?.user.id;
-
     if (!userId) return;
 
     const { error } = await supabase
@@ -114,39 +142,16 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
       });
 
     if (error) {
-      console.log("Leave error:", error);
-
+      console.log(error);
       return;
     }
 
     await fetchTrainings();
   };
 
-  const canJoinSession = (trainingId: string) => {
-    if (!session?.user.id || !profile) return false;
-
-    const userId = session.user.id;
-
-    const count = trainings
-      .flatMap((t) => t.session_participants)
-      .filter((p) => p.user_id === userId).length;
-
-    return count < (profile?.max_sessions_per_week ?? 0);
-  };
-
-  const myBookings = trainings.flatMap((training) =>
-    training.session_participants.filter(
-      (participant) => participant.user_id === session?.user.id,
-    ),
-  );
-  const bookedCount = myBookings.length;
-
-  const reachedLimit = bookedCount >= (profile?.max_sessions_per_week ?? 0);
-
-  useEffect(() => {
-    fetchTrainings();
-  }, []);
-
+  // -------------------------
+  // MEMO
+  // -------------------------
   const value = useMemo(
     () => ({
       trainings,
@@ -159,7 +164,7 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
       reachedLimit,
       bookedCount,
     }),
-    [trainings, loading],
+    [trainings, loading, bookedCount, reachedLimit],
   );
 
   return (
