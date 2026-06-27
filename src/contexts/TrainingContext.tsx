@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { Alert } from "react-native";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -106,7 +106,11 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
     .flatMap((t) => t.session_participants)
     .filter((p) => p.user_id === session?.user?.id).length;
 
-  const reachedLimit = bookedCount >= (profile?.max_sessions_per_week ?? 0);
+  const maxSessions = profile?.max_sessions_per_week ?? 0;
+  // No `> 0` guard here: a user with a 0 allowance HAS reached their limit, so
+  // TrainingCard correctly disables the join button. AlertBar applies its own
+  // `max > 0` guard for the red "limit" warning display.
+  const reachedLimit = bookedCount >= maxSessions;
 
   // -------------------------
   // GUARD
@@ -164,23 +168,17 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
     await fetchTrainings();
   };
 
-  // -------------------------
-  // MEMO
-  // -------------------------
-  const value = useMemo(
-    () => ({
-      trainings,
-      loading,
-      fetchTrainings,
-      getTrainingsByDay,
-      joinSession,
-      leaveSession,
-      canJoinSession,
-      reachedLimit,
-      bookedCount,
-    }),
-    [trainings, loading, bookedCount, reachedLimit],
-  );
+  const value = {
+    trainings,
+    loading,
+    fetchTrainings,
+    getTrainingsByDay,
+    joinSession,
+    leaveSession,
+    canJoinSession,
+    reachedLimit,
+    bookedCount,
+  };
 
   return (
     <TrainingContext.Provider value={value}>
