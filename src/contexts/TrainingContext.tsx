@@ -8,6 +8,7 @@ import { Training } from "@/types/Training";
 const bookingErrorMessages: Record<string, string> = {
   weekly_limit_reached: "Dostigli ste nedeljni limit.",
   session_full: "Termin je popunjen.",
+  session_closed: "Termin je trenutno zatvoren za prijave.",
   already_joined: "Već ste prijavljeni na ovaj termin.",
   not_authenticated: "Niste prijavljeni.",
   session_not_found: "Termin nije pronađen.",

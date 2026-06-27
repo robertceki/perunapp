@@ -1,19 +1,25 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
+export const Colors = {
+  paper: "#FBF7F1",
+  surface: "#FFFFFF",
+  surfaceWarm: "#FFFDF8",
+  surfaceMuted: "#FAF6EF",
+  ink: "#221F2B",
+  inkMuted: "#8B8192",
+  inkFaint: "#9A8FA0",
+  burgundy: "#58003D",
+  burgundyTint: "#F6E9F0",
+  burgundyBorder: "#ECCFDF",
+  burgundyText2: "#9A6385",
+  gold: "#C6A35C",
+  goldDeep: "#9A7B33",
+  goldTint: "#F6EFDF",
+  goldBorder: "#E8D9B5",
+  sage: "#586056",
+  sageTint: "#EAEDE7",
+  navy: "#22222A",
+  border: "#F0E8DD",
+  track: "#EFE7DA",
+  fieldBorder: "#ECE2D4",
+} as const;
 
-export default {
-  light: {
-    text: '#000',
-    background: '#fff',
-    tint: tintColorLight,
-    tabIconDefault: '#ccc',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#fff',
-    background: '#000',
-    tint: tintColorDark,
-    tabIconDefault: '#ccc',
-    tabIconSelected: tintColorDark,
-  },
-};
+export type ColorToken = keyof typeof Colors;

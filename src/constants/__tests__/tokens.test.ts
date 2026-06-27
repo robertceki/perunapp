@@ -1,0 +1,27 @@
+import { Colors } from "../Colors";
+
+test("defines the redesign color tokens with their exact hex values", () => {
+  expect(Colors).toMatchObject({
+    paper: "#FBF7F1",
+    surface: "#FFFFFF",
+    surfaceWarm: "#FFFDF8",
+    surfaceMuted: "#FAF6EF",
+    ink: "#221F2B",
+    inkMuted: "#8B8192",
+    inkFaint: "#9A8FA0",
+    burgundy: "#58003D",
+    burgundyTint: "#F6E9F0",
+    burgundyBorder: "#ECCFDF",
+    burgundyText2: "#9A6385",
+    gold: "#C6A35C",
+    goldDeep: "#9A7B33",
+    goldTint: "#F6EFDF",
+    goldBorder: "#E8D9B5",
+    sage: "#586056",
+    sageTint: "#EAEDE7",
+    navy: "#22222A",
+    border: "#F0E8DD",
+    track: "#EFE7DA",
+    fieldBorder: "#ECE2D4",
+  });
+});

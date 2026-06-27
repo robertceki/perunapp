@@ -10,6 +10,7 @@ type AuthContextType = {
   profile: Profile | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (patch: Partial<Profile>) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -18,6 +19,7 @@ export const AuthContext = createContext<AuthContextType>({
   profile: null,
   login: async () => {},
   logout: async () => {},
+  updateProfile: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -79,6 +81,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSession(null);
   };
 
+  const updateProfile = async (patch: Partial<Profile>) => {
+    if (!session) {
+      throw new Error("No active session");
+    }
+
+    const { error } = await supabase
+      .from("profiles")
+      .update(patch)
+      .eq("id", session.user.id);
+
+    if (error) {
+      throw error;
+    }
+
+    await fetchProfile(session.user.id);
+  };
+
   const value = useMemo(
     () => ({
       session,
@@ -86,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profile,
       login,
       logout,
+      updateProfile,
     }),
     [session, loading, profile],
   );
