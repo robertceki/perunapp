@@ -1,0 +1,18 @@
+# Donatello — Memory
+
+## Session counter
+Current session: 1
+Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/session-logs/2026-06-27-S1-donatello.md
+
+## Completed tasks
+- T7 (S2): Untrack .env, fix .gitignore, add .env.example — DONE
+- T10 (A4): Replace `any` types — DONE
+- T11 (A5): Fix Training.created_at type — DONE
+- T13 (A6): Rename TreiningCard → TrainingCard — DONE
+- T14 (A7): Centralize day-of-week list — DONE
+- T16 (D2): Remove unused react-native-tab-view — DONE
+
+## Gotchas
+- Six tab-route files (monday–saturday.tsx + index.tsx redirect) were already deleted by another agent before these tasks. Do NOT touch app/(tabs)/ unless fixing the one import in _layout.tsx (which was done for T13).
+- Profile type needed careful construction: reviewed AuthContext, AlertBar, and the actual Supabase return to infer the correct fields (id, first_name, last_name, max_sessions_per_week).
+- Days constant created with Sunday included (per goal.md revision noting Sunday-start week for limit resets), but TRAINING_DAYS subset kept at Mon-Sat for backward UI compatibility.
