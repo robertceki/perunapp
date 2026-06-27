@@ -23,7 +23,7 @@ import { useAuth } from "@/hooks/useAuth";
 SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
-  const { session, loading } = useAuth();
+  const { session, loading, profile } = useAuth();
 
   const router = useRouter();
   const segments = useSegments();
@@ -31,16 +31,37 @@ function RootNavigator() {
   useEffect(() => {
     if (loading) return;
 
+    if (session && !profile) return;
+
     const inLoginPage = segments[0] === "login";
+    const inAdminPage = segments[0] === "(admin)";
+    const inTabsPage = segments[0] === "(tabs)";
 
     if (!session && !inLoginPage) {
       router.replace("/login");
+      return;
     }
 
-    if (session && inLoginPage) {
-      router.replace("/(tabs)");
+    if (session && profile && inLoginPage) {
+      if (profile.role === "admin") {
+        router.replace("/(admin)");
+      } else {
+        router.replace("/(tabs)");
+      }
+      return;
     }
-  }, [session, loading, segments]);
+
+    if (session && profile && !inLoginPage) {
+      if (profile.role === "admin" && !inAdminPage) {
+        router.replace("/(admin)");
+        return;
+      }
+      if (profile.role !== "admin" && !inTabsPage) {
+        router.replace("/(tabs)");
+        return;
+      }
+    }
+  }, [session, loading, profile, segments, router]);
 
   if (loading) {
     return (
@@ -60,6 +81,7 @@ function RootNavigator() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" />
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(admin)" />
       <Stack.Screen name="profile" options={{ presentation: "modal" }} />
     </Stack>
   );
