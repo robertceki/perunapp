@@ -3,7 +3,7 @@
 **Goal:** /Users/uros/Documents/Private/Projects/PerunApp/.tmnt/goal.md
 **Audit source:** /Users/uros/Documents/Private/Projects/PerunApp/AUDIT.md
 **Leonardo session:** 1
-**Status:** Phase 2/3 cleanup wave complete (T5,T7,T10-T18 all done and verified). Phase 1 (T1-T4,T6) still blocked on Supabase access from Uros + timezone confirmation. T8/T9 still blocked, sequenced after Phase 1 DB work.
+**Status:** ALL substantive tasks done & verified. Phase 1 security (T1/T2/T3/T4) implemented on the live DB and verified (anon read→401, direct insert→403, RPC enforcement→pass). Phase 2/3 (T5,T7,T8,T9,T10-T18) done. Plus: new-signup default max_sessions_per_week=0. Remaining = optional nice-to-haves (capacity load test, committed verify script, in-app smoke test) + deferred D1/A8. 7 commits on branch `audit`.
 
 ## Phase 0 — Gate (answers required before Phase 1 can be dispatched)
 No tasks here. These are the four open questions from goal.md / AUDIT.md §5,
