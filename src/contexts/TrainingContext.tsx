@@ -82,7 +82,7 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
   // -------------------------
   const bookedCount = trainings
     .flatMap((t) => t.session_participants)
-    .filter((p) => p.user_id === session?.user.id).length;
+    .filter((p) => p.user_id === session?.user?.id).length;
 
   const reachedLimit = bookedCount >= (profile?.max_sessions_per_week ?? 0);
 
@@ -90,7 +90,7 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
   // GUARD
   // -------------------------
   const canJoinSession = () => {
-    if (!session?.user.id || !profile) return false;
+    if (!session?.user?.id || !profile) return false;
 
     return bookedCount < (profile.max_sessions_per_week ?? 0);
   };
@@ -99,7 +99,7 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
   // JOIN (SAFE - NO FAKE DATA)
   // -------------------------
   const joinSession = async (sessionId: string) => {
-    const userId = session?.user.id;
+    const userId = session?.user?.id;
     if (!userId) return;
 
     if (!canJoinSession()) return;
@@ -130,7 +130,7 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
   // LEAVE
   // -------------------------
   const leaveSession = async (sessionId: string) => {
-    const userId = session?.user.id;
+    const userId = session?.user?.id;
     if (!userId) return;
 
     const { error } = await supabase
