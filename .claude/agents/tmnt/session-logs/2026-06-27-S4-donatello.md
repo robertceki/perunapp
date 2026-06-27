@@ -4,10 +4,9 @@ date: 2026-06-27
 ---
 
 ## Tasks this session
-- B-D3 (goal: Phase B Admin RPCs): done. Created migration `supabase/migrations/20260627170200_admin_rpcs.sql` with is_admin helper + 5 admin functions (set_session_open, upsert_session, update_user, delete_user), all guarded by role check. npx tsc --noEmit passes. No DB apply, no commit.
+- B-D4 (goal: admin stats RPCs): done. Authored migration with `admin_member_series()` and `admin_occupancy_summary()`, both security-definer role-guarded, return columns named exactly per spec.
 
 ## Notes for future Donny
-- B-D3 migration follows the plpgsql idiom from join_session (booking_enforcement.sql). is_admin() is a SQL function (stable, security definer) used by all 5 admin functions.
-- All admin functions raise 'not_admin' (errcode 42501) on non-admin caller. Grants set: revoke all from public/anon, grant execute to authenticated.
-- admin_upsert_session uses declare+returning pattern; admin_delete_user deletes from profiles first (cascades session_participants), then auth.users.
-- Goal.md B-D3 spec was crystal clear, Codex nailed it. No surprises.
+- `admin_member_series`: Uses auth.users.created_at (never deleted), generate_series for month buckets, timezone-aware (Europe/Belgrade), stable SQL function.
+- `admin_occupancy_summary`: Occupancy is snapshot-only (session_participants wiped weekly Sunday 00:00). Member growth metrics use persistent auth.users. p_period param accepted for signature stability (chart period control) but not used in math. Both functions properly role-guarded.
+- All functions follow B-D3 pattern: SECURITY DEFINER, `set search_path`, `is_admin()` guard with errcode 42501, revoke public/anon, grant authenticated.
