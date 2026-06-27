@@ -1,8 +1,8 @@
 # Donatello — Memory
 
 ## Session counter
-Current session: 2
-Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/session-logs/2026-06-27-S2-donatello.md
+Current session: 3
+Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/session-logs/2026-06-27-S3-donatello.md
 
 ## Completed tasks
 - T7 (S2): Untrack .env, fix .gitignore, add .env.example — DONE
@@ -13,6 +13,7 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/se
 - T15 (A9): Fix optional chaining session?.user?.id — DONE
 - T16 (D2): Remove unused react-native-tab-view — DONE
 - T18 (D4): Add ESLint + Prettier + CI config — DONE
+- T3+T4 (S3+S4): Atomic booking enforcement RPC + weekly-wipe pg_cron — DONE
 
 ## Gotchas
 - Six tab-route files (monday–saturday.tsx + index.tsx redirect) were already deleted by another agent before these tasks. Do NOT touch app/(tabs)/ unless fixing the one import in _layout.tsx (which was done for T13).
@@ -20,3 +21,4 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/se
 - Days constant created with Sunday included (per goal.md revision noting Sunday-start week for limit resets), but TRAINING_DAYS subset kept at Mon-Sat for backward UI compatibility.
 - T17 (Raph) added test file but didn't add @types/jest devDep, causing tsc --noEmit to fail on Jest globals. This is external to T15/T18.
 - T18's eslint.config.js uses CommonJS flat config (eslint-config-expo/flat compatible with Expo SDK 54). Two lint warnings exist in existing code but are acceptable per DoD.
+- T3+T4: Codex created the RPC with a per-user advisory lock in addition to the per-session lock. This serializes concurrent joins to *different* sessions when the same user would exceed weekly limit. Added constraint_name check in unique_violation handler to distinguish from future constraints.

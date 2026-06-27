@@ -104,22 +104,13 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
 
     if (!canJoinSession()) return;
 
-    const target = trainings.find((t) => t.id === sessionId);
-
-    const alreadyJoined = target?.session_participants.some(
-      (p) => p.user_id === userId,
-    );
-
-    if (alreadyJoined) return;
-
-    const { error } = await supabase.from("session_participants").insert({
-      session_id: sessionId,
-      user_id: userId,
+    const { error } = await supabase.rpc("join_session", {
+      p_session_id: sessionId,
     });
 
     if (error) {
-      console.log(error);
-      return;
+      console.error(error);
+      throw error;
     }
 
     // ALWAYS REFRESH (CONSISTENT STATE)
