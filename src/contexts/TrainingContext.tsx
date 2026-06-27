@@ -1,8 +1,30 @@
 import { createContext, useEffect, useMemo, useState } from "react";
+import { Alert } from "react-native";
 
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/services/supabase/client";
 import { Training } from "@/types/Training";
+
+const bookingErrorMessages: Record<string, string> = {
+  weekly_limit_reached: "Dostigli ste nedeljni limit.",
+  session_full: "Termin je popunjen.",
+  already_joined: "Već ste prijavljeni na ovaj termin.",
+  not_authenticated: "Niste prijavljeni.",
+  session_not_found: "Termin nije pronađen.",
+};
+
+const getBookingErrorMessage = (rawMessage: string, mapRpcCodes = true) => {
+  if (mapRpcCodes) {
+    const code = Object.keys(bookingErrorMessages).find((key) =>
+      rawMessage.includes(key),
+    );
+
+    if (code) return bookingErrorMessages[code];
+  }
+
+  const fallback = "Došlo je do greške. Pokušajte ponovo.";
+  return __DEV__ && rawMessage ? `${fallback}\n\n${rawMessage}` : fallback;
+};
 
 type TrainingContextType = {
   trainings: Training[];
@@ -109,8 +131,9 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error) {
-      console.error(error);
-      throw error;
+      if (__DEV__) console.error(error);
+      Alert.alert(getBookingErrorMessage(error.message));
+      return;
     }
 
     // ALWAYS REFRESH (CONSISTENT STATE)
@@ -133,7 +156,8 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
       });
 
     if (error) {
-      console.log(error);
+      if (__DEV__) console.error(error);
+      Alert.alert(getBookingErrorMessage(error.message, false));
       return;
     }
 
