@@ -5,6 +5,9 @@ export type Training = {
   time: string;
   max_participants: number;
   created_at: string;
+  is_open: boolean;
+  room: string | null;
+  duration_min: number | null;
   session_participants: {
     user_id: string;
     profiles: {
