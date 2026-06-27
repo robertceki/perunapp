@@ -1,15 +1,13 @@
 import { Pressable, Text, View } from "react-native";
 
-const DAYS = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-];
+import { TRAINING_DAYS } from "@/constants/days";
 
-export default function DayFilter({ selected, setSelected }: any) {
+interface DayFilterProps {
+  selected: string;
+  setSelected: (day: string) => void;
+}
+
+export default function DayFilter({ selected, setSelected }: DayFilterProps) {
   return (
     <View
       style={{
@@ -19,7 +17,7 @@ export default function DayFilter({ selected, setSelected }: any) {
         backgroundColor: "#fff",
       }}
     >
-      {DAYS.map((day) => (
+      {TRAINING_DAYS.map((day) => (
         <Pressable
           key={day}
           onPress={() => setSelected(day)}

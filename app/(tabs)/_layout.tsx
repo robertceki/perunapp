@@ -4,7 +4,7 @@ import { View } from "react-native";
 import AlertBar from "@/components/AlertBar";
 import DayFilter from "@/components/DayFilter";
 import Header from "@/components/Header";
-import { TrainingCard } from "@/components/TreiningCard";
+import { TrainingCard } from "@/components/TrainingCard";
 import { useTrainings } from "@/hooks/useTrainings";
 
 export default function TabsLayout() {

@@ -4,7 +4,7 @@ export type Training = {
   title: string;
   time: string;
   max_participants: number;
-  created_at: number;
+  created_at: string;
   session_participants: {
     user_id: string;
     profiles: {

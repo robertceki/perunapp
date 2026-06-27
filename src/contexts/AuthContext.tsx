@@ -1,12 +1,13 @@
 import { Session } from "@supabase/supabase-js";
 import { createContext, useEffect, useMemo, useState } from "react";
 
+import { Profile } from "@/types/Profile";
 import { supabase } from "@/services/supabase/client";
 
 type AuthContextType = {
   session: Session | null;
   loading: boolean;
-  profile: any;
+  profile: Profile | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -22,7 +23,7 @@ export const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
