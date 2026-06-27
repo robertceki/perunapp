@@ -3,7 +3,7 @@
 **Goal:** /Users/uros/Documents/Private/Projects/PerunApp/.tmnt/goal.md
 **Audit source:** /Users/uros/Documents/Private/Projects/PerunApp/AUDIT.md
 **Leonardo session:** 1
-**Status:** Phase 2/3 cleanup wave (T5,T7,T10,T11,T12,T13,T14,T16) complete and verified. Phase 1 (T1-T4,T6) still blocked on Supabase access from Uros. T8/T9/T15/T17/T18 not yet dispatched.
+**Status:** Phase 2/3 cleanup wave complete (T5,T7,T10-T18 all done and verified). Phase 1 (T1-T4,T6) still blocked on Supabase access from Uros + timezone confirmation. T8/T9 still blocked, sequenced after Phase 1 DB work.
 
 ## Phase 0 — Gate (answers required before Phase 1 can be dispatched)
 No tasks here. These are the four open questions from goal.md / AUDIT.md §5,
@@ -36,10 +36,10 @@ to Question 1.
 | T12 | Mikey | A2 — Resolve `friday.tsx` stub as part of A1 (no separate fix — folded into T5) | Covered by T5's DoD (file deleted under option (a), or given real content under option (b)). | T5 | done |
 | T13 | Mikey | A6 — Rename `TreiningCard.tsx` → `TrainingCard.tsx` (and update the one import site) | File renamed; `grep -rn "TreiningCard"` returns no matches anywhere in repo; app still builds (`tsc --noEmit`). | — | done |
 | T14 | Donny | A7 — Centralize day-of-week list/type (currently hardcoded lowercase English strings, missing Sunday) | New `Day` type/const array (e.g. `src/constants/days.ts`) covering all 7 days; `DayFilter.tsx` and any `day_of_week` comparison sites import from it; `grep -rn "monday\|tuesday"` in component files shows only the centralized constant, not inline literals. | — | done |
-| T15 | Donny | A9 — Minor inconsistencies: `session?.user.id` mixed optional chaining (`TrainingContext.tsx:85`), inconsistent import ordering | Line fixed to consistent optional chaining; no functional change; `tsc --noEmit` passes. | — | open |
+| T15 | Donny | A9 — Minor inconsistencies: `session?.user.id` mixed optional chaining (`TrainingContext.tsx:85`), inconsistent import ordering | Line fixed to consistent optional chaining; no functional change; `tsc --noEmit` passes. | — | done |
 | T16 | Donny | D2 — Remove unused `react-native-tab-view` dependency (confirm zero imports first) | `grep -rn "react-native-tab-view" src/ app/` returns nothing (pre-check, already true per audit) → removed from `package.json` + `package-lock.json`; `npm install` runs clean; app still builds. | — | done |
-| T17 | Raph | D3 — Fix/remove broken test, add a real test runner | Either: delete `src/components/__tests__/StyledText-test.js` (references nonexistent `../StyledText`) and add a minimal real test for one of the new server-side-aware functions; or set up `jest-expo` + `@testing-library/react-native` with a `test` script in `package.json`. DoD: `npm test` runs and exits 0. | — (independent, but most useful once T2-T4 exist to give it something meaningful to test) | open |
-| T18 | Donny | D4 — Add lint/format/CI config (ESLint, Prettier, basic GitHub Actions or equivalent CI running `tsc --noEmit` + `npm test`) | `.eslintrc`/`eslint.config.js` + `.prettierrc` committed; CI config file committed; `npx eslint .` runs without crashing (warnings OK, just needs to run). | T17 (CI should run the test script once it exists) | blocked |
+| T17 | Raph | D3 — Fix/remove broken test, add a real test runner | Either: delete `src/components/__tests__/StyledText-test.js` (references nonexistent `../StyledText`) and add a minimal real test for one of the new server-side-aware functions; or set up `jest-expo` + `@testing-library/react-native` with a `test` script in `package.json`. DoD: `npm test` runs and exits 0. | — (independent, but most useful once T2-T4 exist to give it something meaningful to test) | done |
+| T18 | Donny | D4 — Add lint/format/CI config (ESLint, Prettier, basic GitHub Actions or equivalent CI running `tsc --noEmit` + `npm test`) | `.eslintrc`/`eslint.config.js` + `.prettierrc` committed; CI config file committed; `npx eslint .` runs without crashing (warnings OK, just needs to run). | T17 (CI should run the test script once it exists) | done |
 
 ## Deferred / tracked (no task — explicit reason)
 | Finding | Reason deferred |
@@ -144,3 +144,14 @@ Residual blockers after gate answers:
 - 2026-06-27 — Main Claude independent verification (external signal): tsc --noEmit exit 0; grep checks for `: any`, TreiningCard, react-native-tab-view all clean; git ls-files .env empty; new files (.env.example, src/types/Profile.ts, src/constants/days.ts) confirmed present; app/(tabs)/ contains only _layout.tsx + index.tsx.
 - 2026-06-27 — Gate revision recorded: weekly-limit week window corrected to Sunday 00:00:00 -> Saturday 23:59:59 (Sunday-start), supersedes earlier Mon-Sun assumption. Affects T3/T4 only (still blocked on T1->T2 DB chain). Timezone (inferred Europe/Belgrade) still needs Uros confirmation before T3/T4 dispatch.
 - 2026-06-27 — No commits made (verifier gate not run this pass); all changes live on working tree, branch `audit`.
+- 2026-06-27 — T17 (D3) done by Raph. Deleted broken src/components/__tests__/StyledText-test.js (imported nonexistent ../StyledText). Added jest-expo + @testing-library/react-native, "test": "jest" script + jest-expo preset. New real test: src/constants/__tests__/days.test.ts asserting DAYS/TRAINING_DAYS contents/order/Sunday-start. npm test PASS (1 suite/1 test).
+- 2026-06-27 — T15 (A9) done by Donny. src/contexts/TrainingContext.tsx — consistent optional chaining (session?.user?.id) at 4 sites (lines 85, 93, 102, 133). No behavior change. tsc --noEmit PASS.
+- 2026-06-27 — T18 (D4) done by Donny. Added eslint-config-expo (flat config eslint.config.js), prettier (.prettierrc), lint/format npm scripts; CI workflow .github/workflows/ci.yml runs npm ci -> tsc --noEmit -> npm test -> eslint on push/PR.
+- 2026-06-27 — Regression caught + fixed by main Claude: Raph's new test file made tsc --noEmit fail (missing Jest global types). Added @types/jest devDependency as a T17 follow-up. Resolved; tsc --noEmit now exit 0.
+- 2026-06-27 — Main Claude independent verification (external signal): npx tsc --noEmit exit 0; npm test 1 suite/1 test passing; npx eslint . runs clean, 0 errors, 2 pre-existing warnings (useEffect missing 'router' dep in app/_layout.tsx; useMemo missing deps in TrainingContext.tsx:167) — acceptable per T18 DoD (warnings OK).
+- 2026-06-27 — Flag for T9 (not fixed separately now): the TrainingContext.tsx:167 useMemo missing-deps warning sits in the booking/limit-display logic T9 will de-duplicate — address it as part of that rework, not as a standalone lint fix.
+- 2026-06-27 — Committed to branch `audit`, verifier gate satisfied each time (fresh .verify-pass written after green signal):
+  - babc075 chore: TMNT/Karpathy environment + audit deliverables
+  - dbb31d4 fix: audit remediation cleanup wave (T5,T7,T10-T14,T16)
+  - c0e91b1 chore: testing + lint/CI + consistency fixes (T15,T17,T18)
+  Working tree clean.
