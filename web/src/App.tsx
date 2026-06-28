@@ -7,10 +7,12 @@ import {
 } from "react-router-dom";
 
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ToastProvider } from "@/contexts/ToastContext";
+import { TrainingProvider } from "@/contexts/TrainingContext";
 import { useAuth } from "@/hooks/useAuth";
 import AdminHome from "@/screens/AdminHome";
 import MemberHome from "@/screens/MemberHome";
-import ProfilePlaceholder from "@/screens/ProfilePlaceholder";
+import Profile from "@/screens/Profile";
 import ForgotPasswordScreen from "@/screens/auth/ForgotPasswordScreen";
 import LoginScreen from "@/screens/auth/LoginScreen";
 import RegisterScreen from "@/screens/auth/RegisterScreen";
@@ -45,6 +47,18 @@ function RequireAdmin() {
   return <Outlet />;
 }
 
+function MemberProviders() {
+  const { session, profile } = useAuth();
+
+  return (
+    <ToastProvider>
+      <TrainingProvider profile={profile} session={session}>
+        <Outlet />
+      </TrainingProvider>
+    </ToastProvider>
+  );
+}
+
 function AppRoutes() {
   const { loading, session, profile } = useAuth();
 
@@ -69,8 +83,10 @@ function AppRoutes() {
       </Route>
 
       <Route element={<RequireMember />}>
-        <Route path="/" element={<MemberHome />} />
-        <Route path="/profile" element={<ProfilePlaceholder />} />
+        <Route element={<MemberProviders />}>
+          <Route path="/" element={<MemberHome />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
       </Route>
 
       <Route element={<RequireAdmin />}>
