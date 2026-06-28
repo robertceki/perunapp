@@ -8,8 +8,10 @@ import { Training } from "@/types/Training";
 const bookingErrorMessages: Record<string, string> = {
   weekly_limit_reached: "Dostigli ste nedeljni limit.",
   session_full: "Termin je popunjen.",
+  session_closed: "Termin je trenutno zatvoren za prijave.",
   already_joined: "Već ste prijavljeni na ovaj termin.",
   not_authenticated: "Niste prijavljeni.",
+  account_inactive: "Vaš nalog je deaktiviran. Obratite se administratoru.",
   session_not_found: "Termin nije pronađen.",
 };
 
@@ -89,9 +91,17 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   };
 
+  // Only fetch once authenticated — the anon role has no grants on `sessions`
+  // (RLS hardening), and we must refetch when the signed-in user changes.
   useEffect(() => {
-    fetchTrainings();
-  }, []);
+    if (session) {
+      fetchTrainings();
+    } else {
+      setTrainings([]);
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.id]);
 
   // -------------------------
   // FILTER
