@@ -1,69 +1,58 @@
-import { createContext, useEffect, useState } from "react";
-import { Alert } from "react-native";
+import type { Session } from "@supabase/supabase-js";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/services/supabase/client";
-import { Training } from "@/types/Training";
+import { TrainingContext } from "@/hooks/useTrainings";
+import { getBookingErrorMessage } from "@/lib/bookingErrors";
+import { supabase } from "@/lib/supabase";
+import type { Profile } from "@/types/Profile";
+import type { Training } from "@/types/Training";
 
-const bookingErrorMessages: Record<string, string> = {
-  weekly_limit_reached: "Dostigli ste nedeljni limit.",
-  session_full: "Termin je popunjen.",
-  session_closed: "Termin je trenutno zatvoren za prijave.",
-  already_joined: "Već ste prijavljeni na ovaj termin.",
-  not_authenticated: "Niste prijavljeni.",
-  account_inactive: "Vaš nalog je deaktiviran. Obratite se administratoru.",
-  session_not_found: "Termin nije pronađen.",
-};
+export type BookingError = Error & { rawMessage: string };
 
-const getBookingErrorMessage = (rawMessage: string, mapRpcCodes = true) => {
-  if (mapRpcCodes) {
-    const code = Object.keys(bookingErrorMessages).find((key) =>
-      rawMessage.includes(key),
-    );
-
-    if (code) return bookingErrorMessages[code];
-  }
-
-  const fallback = "Došlo je do greške. Pokušajte ponovo.";
-  return __DEV__ && rawMessage ? `${fallback}\n\n${rawMessage}` : fallback;
-};
-
-type TrainingContextType = {
+export type TrainingContextValue = {
   trainings: Training[];
   loading: boolean;
   fetchTrainings: () => Promise<void>;
   getTrainingsByDay: (day: string) => Training[];
-  joinSession: (sessionId: string) => Promise<void>;
-  leaveSession: (sessionId: string) => Promise<void>;
+  joinSession: (sessionId: string) => Promise<BookingError | null>;
+  leaveSession: (sessionId: string) => Promise<BookingError | null>;
   canJoinSession: () => boolean;
   reachedLimit: boolean;
   bookedCount: number;
 };
 
-export const TrainingContext = createContext<TrainingContextType>({
-  trainings: [],
-  loading: true,
-  fetchTrainings: async () => {},
-  getTrainingsByDay: () => [],
-  joinSession: async () => {},
-  leaveSession: async () => {},
-  canJoinSession: () => false,
-  reachedLimit: false,
-  bookedCount: 0,
-});
+type TrainingProviderProps = {
+  children: ReactNode;
+  session: Session | null;
+  profile: Profile | null;
+};
 
-export function TrainingProvider({ children }: { children: React.ReactNode }) {
-  const { session, profile } = useAuth();
+function createBookingError(rawMessage: string, mapRpcCodes = true) {
+  const error = new Error(
+    getBookingErrorMessage(rawMessage, mapRpcCodes),
+  ) as BookingError;
+  error.rawMessage = rawMessage;
+  return error;
+}
 
+export function TrainingProvider({
+  children,
+  session,
+  profile,
+}: TrainingProviderProps) {
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [loading, setLoading] = useState(true);
+  const userId = session?.user.id;
 
-  // -------------------------
-  // FETCH
-  // -------------------------
-  const fetchTrainings = async () => {
+  const fetchTrainings = useCallback(async () => {
+    if (!userId) {
+      setTrainings([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
-
     const { data, error } = await supabase
       .from("sessions")
       .select(
@@ -75,120 +64,98 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
           )
         )`,
       )
-      .order("created_at", {
-        ascending: false,
-      });
+      .order("created_at", { ascending: false });
 
-    if (error) {
-      console.error(error);
-      setLoading(false);
-      return;
+    if (!error) {
+      setTrainings([...(data as Training[])]);
     }
 
-    // IMPORTANT: new reference
-    setTrainings([...(data as Training[])]);
-
     setLoading(false);
-  };
+  }, [userId]);
 
-  // Only fetch once authenticated — the anon role has no grants on `sessions`
-  // (RLS hardening), and we must refetch when the signed-in user changes.
   useEffect(() => {
-    if (session) {
-      fetchTrainings();
+    if (userId) {
+      void fetchTrainings();
     } else {
       setTrainings([]);
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.user?.id]);
+  }, [fetchTrainings, userId]);
 
-  // -------------------------
-  // FILTER
-  // -------------------------
-  const getTrainingsByDay = (day: string) =>
-    trainings.filter((t) => t.day_of_week === day);
+  const getTrainingsByDay = useCallback(
+    (day: string) =>
+      trainings.filter((training) => training.day_of_week === day),
+    [trainings],
+  );
 
-  // -------------------------
-  // BOOKED COUNT
-  // -------------------------
   const bookedCount = trainings
-    .flatMap((t) => t.session_participants)
-    .filter((p) => p.user_id === session?.user?.id).length;
-
+    .flatMap((training) => training.session_participants)
+    .filter((participant) => participant.user_id === userId).length;
   const maxSessions = profile?.max_sessions_per_week ?? 0;
-  // No `> 0` guard here: a user with a 0 allowance HAS reached their limit, so
-  // TrainingCard correctly disables the join button. AlertBar applies its own
-  // `max > 0` guard for the red "limit" warning display.
   const reachedLimit = bookedCount >= maxSessions;
 
-  // -------------------------
-  // GUARD
-  // -------------------------
-  const canJoinSession = () => {
-    if (!session?.user?.id || !profile) return false;
+  const canJoinSession = useCallback(
+    () => Boolean(userId && profile && bookedCount < maxSessions),
+    [bookedCount, maxSessions, profile, userId],
+  );
 
-    return bookedCount < (profile.max_sessions_per_week ?? 0);
-  };
+  const joinSession = useCallback(
+    async (sessionId: string) => {
+      if (!userId || !canJoinSession()) return null;
 
-  // -------------------------
-  // JOIN (SAFE - NO FAKE DATA)
-  // -------------------------
-  const joinSession = async (sessionId: string) => {
-    const userId = session?.user?.id;
-    if (!userId) return;
-
-    if (!canJoinSession()) return;
-
-    const { error } = await supabase.rpc("join_session", {
-      p_session_id: sessionId,
-    });
-
-    if (error) {
-      if (__DEV__) console.error(error);
-      Alert.alert(getBookingErrorMessage(error.message));
-      return;
-    }
-
-    // ALWAYS REFRESH (CONSISTENT STATE)
-    await fetchTrainings();
-  };
-
-  // -------------------------
-  // LEAVE
-  // -------------------------
-  const leaveSession = async (sessionId: string) => {
-    const userId = session?.user?.id;
-    if (!userId) return;
-
-    const { error } = await supabase
-      .from("session_participants")
-      .delete()
-      .match({
-        session_id: sessionId,
-        user_id: userId,
+      const { error } = await supabase.rpc("join_session", {
+        p_session_id: sessionId,
       });
 
-    if (error) {
-      if (__DEV__) console.error(error);
-      Alert.alert(getBookingErrorMessage(error.message, false));
-      return;
-    }
+      if (error) return createBookingError(error.message);
 
-    await fetchTrainings();
-  };
+      await fetchTrainings();
+      return null;
+    },
+    [canJoinSession, fetchTrainings, userId],
+  );
 
-  const value = {
-    trainings,
-    loading,
-    fetchTrainings,
-    getTrainingsByDay,
-    joinSession,
-    leaveSession,
-    canJoinSession,
-    reachedLimit,
-    bookedCount,
-  };
+  const leaveSession = useCallback(
+    async (sessionId: string) => {
+      if (!userId) return null;
+
+      const { error } = await supabase
+        .from("session_participants")
+        .delete()
+        .match({ session_id: sessionId, user_id: userId });
+
+      if (error) return createBookingError(error.message, false);
+
+      await fetchTrainings();
+      return null;
+    },
+    [fetchTrainings, userId],
+  );
+
+  const value = useMemo(
+    () => ({
+      trainings,
+      loading,
+      fetchTrainings,
+      getTrainingsByDay,
+      joinSession,
+      leaveSession,
+      canJoinSession,
+      reachedLimit,
+      bookedCount,
+    }),
+    [
+      trainings,
+      loading,
+      fetchTrainings,
+      getTrainingsByDay,
+      joinSession,
+      leaveSession,
+      canJoinSession,
+      reachedLimit,
+      bookedCount,
+    ],
+  );
 
   return (
     <TrainingContext.Provider value={value}>

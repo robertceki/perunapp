@@ -1,45 +1,61 @@
-import { StyleSheet, Text, View } from "react-native";
-import { Colors } from "@/constants/Colors";
-import { FontFamilies } from "@/constants/typography";
+type BarChartDatum = {
+  label: string;
+  value: number;
+};
 
-interface BarChartProps {
-  data: { label: string; value: number }[];
+type BarChartProps = {
+  data: BarChartDatum[];
   currentIndex?: number;
   showValueLabelOnCurrent?: boolean;
-}
+};
 
-export default function BarChart({ data, currentIndex = 0, showValueLabelOnCurrent = false }: BarChartProps) {
-  const maxValue = Math.max(...data.map((d) => d.value), 1);
-  const chartHeight = 120;
+export default function BarChart({
+  data,
+  currentIndex = 0,
+  showValueLabelOnCurrent = false,
+}: BarChartProps) {
+  if (data.length === 0) {
+    return (
+      <div className="flex h-40 items-center justify-center text-[13px] font-semibold text-ink-muted">
+        Nema podataka za izabrani period.
+      </div>
+    );
+  }
+
+  const maxValue = Math.max(...data.map((item) => item.value), 1);
 
   return (
-    <View style={styles.container}>
-      {data.map((item, idx) => {
-        const barHeight = Math.max((item.value / maxValue) * chartHeight, 4);
-        const isCurrentIdx = idx === currentIndex;
-        const barColor = isCurrentIdx ? Colors.burgundy : Colors.gold;
+    <div className="flex h-40 items-end gap-1 pt-3">
+      {data.map((item, index) => {
+        const height = Math.max((item.value / maxValue) * 112, 4);
+        const current = index === currentIndex;
 
         return (
-          <View key={idx} style={styles.barColumn}>
-            {showValueLabelOnCurrent && isCurrentIdx && (
-              <Text style={styles.valueLabel}>{item.value}</Text>
+          <div
+            className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1"
+            key={`${item.label}-${index}`}
+          >
+            {showValueLabelOnCurrent && current && (
+              <span className="font-display text-sm font-extrabold text-ink">
+                {item.value}
+              </span>
             )}
-            <View style={[styles.bar, { height: barHeight, backgroundColor: barColor }]}>
-              <View style={[styles.highlight, { height: 3 }]} />
-            </View>
-            <Text style={styles.barLabel}>{item.label}</Text>
-          </View>
+            <div
+              aria-label={`${item.label}: ${item.value}`}
+              className={`w-full rounded-t-[6px] ${
+                current
+                  ? "bg-linear-to-t from-burgundy to-burgundy-text2"
+                  : "bg-linear-to-t from-gold to-gold-border"
+              }`}
+              role="img"
+              style={{ height: `${height}px` }}
+            />
+            <span className="max-w-full truncate text-[9px] font-bold text-ink-faint">
+              {item.label}
+            </span>
+          </div>
         );
       })}
-    </View>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flexDirection: "row", gap: 4, justifyContent: "space-evenly", height: 160 },
-  barColumn: { flex: 1, alignItems: "center", justifyContent: "flex-end", gap: 2 },
-  bar: { width: "100%", borderTopLeftRadius: 6, borderTopRightRadius: 6 },
-  highlight: { backgroundColor: Colors.goldTint, width: "100%" },
-  barLabel: { fontFamily: FontFamilies.hanken[700], fontSize: 9, fontWeight: "700", color: Colors.inkFaint },
-  valueLabel: { fontFamily: FontFamilies.bricolage[800], fontSize: 14, fontWeight: "800", color: Colors.ink, marginBottom: 4 },
-});

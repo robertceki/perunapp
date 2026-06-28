@@ -1,15 +1,9 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { useRouter } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigate } from "react-router-dom";
 
-import { Colors } from "@/constants/Colors";
-import { Radii, Shadows, Spacing } from "@/constants/spacing";
-import { FontFamilies, Typography } from "@/constants/typography";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Header() {
-  const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const navigate = useNavigate();
   const { profile } = useAuth();
   const initials = [profile?.first_name, profile?.last_name]
     .filter(Boolean)
@@ -19,68 +13,29 @@ export default function Header() {
     .toUpperCase();
 
   return (
-    <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.brand}>
-        <Image
-          accessibilityIgnoresInvertColors
-          source={require("../../assets/images/perun-emblem-burgundy.png")}
-          style={styles.emblem}
+    <header
+      className="flex items-center justify-between bg-paper px-5 py-2.5"
+      style={{ paddingTop: "calc(env(safe-area-inset-top) + 10px)" }}
+    >
+      <div className="flex items-center gap-2.5">
+        <img
+          alt=""
+          className="h-[30px] w-[30px] object-contain"
+          src="/brand/perun-emblem-burgundy.png"
         />
-        <Text style={styles.wordmark}>PERUN</Text>
-      </View>
+        <span className="font-display text-lg font-extrabold tracking-[0.12em] text-burgundy">
+          PERUN
+        </span>
+      </div>
 
-      <Pressable
-        accessibilityLabel="Otvori profil"
-        accessibilityRole="button"
-        hitSlop={8}
-        onPress={() => router.push("/profile")}
-        style={({ pressed }) => [styles.avatar, pressed && styles.pressed]}
+      <button
+        aria-label="Otvori profil"
+        className="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-burgundy text-[13.5px] font-bold text-surface shadow-sm active:opacity-90"
+        onClick={() => navigate("/profile")}
+        type="button"
       >
-        <Text style={styles.initials}>{initials || "P"}</Text>
-      </Pressable>
-    </View>
+        {initials || "P"}
+      </button>
+    </header>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    alignItems: "center",
-    backgroundColor: Colors.paper,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: Spacing.screenHorizontal,
-    paddingVertical: 10,
-  },
-  brand: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 9,
-  },
-  emblem: {
-    height: 30,
-    resizeMode: "contain",
-    width: 30,
-  },
-  wordmark: {
-    ...Typography.wordmark,
-    color: Colors.burgundy,
-  },
-  avatar: {
-    ...Shadows.avatar,
-    alignItems: "center",
-    backgroundColor: Colors.burgundy,
-    borderRadius: Radii.avatar,
-    height: 38,
-    justifyContent: "center",
-    width: 38,
-  },
-  initials: {
-    color: Colors.surface,
-    fontFamily: FontFamilies.hanken[700],
-    fontSize: 13.5,
-    fontWeight: "700",
-  },
-  pressed: {
-    opacity: 0.9,
-  },
-});

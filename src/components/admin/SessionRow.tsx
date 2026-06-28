@@ -1,79 +1,102 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Colors } from "@/constants/Colors";
-import { Radii, Shadows, Spacing } from "@/constants/spacing";
-import { FontFamilies } from "@/constants/typography";
-import { Training } from "@/types/Training";
-import Toggle from "./Toggle";
+import { useState } from "react";
 
-interface SessionRowProps {
+import Toggle from "@/components/admin/Toggle";
+import { useToast } from "@/hooks/useToast";
+import type { Training } from "@/types/Training";
+
+type SessionRowProps = {
   session: Training;
   bookedCount: number;
-  onToggleOpen: (open: boolean) => void;
-  onPress?: () => void;
-}
+  onToggleOpen: (open: boolean) => Promise<void>;
+  onClick?: () => void;
+};
 
-export default function SessionRow({ session, bookedCount, onToggleOpen, onPress }: SessionRowProps) {
+export default function SessionRow({
+  session,
+  bookedCount,
+  onToggleOpen,
+  onClick,
+}: SessionRowProps) {
+  const { showToast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
   const isFull = bookedCount >= session.max_participants;
-  const isClosed = !session.is_open;
+  const closed = !session.is_open;
+
+  async function toggle(open: boolean) {
+    setSubmitting(true);
+
+    try {
+      await onToggleOpen(open);
+    } catch {
+      showToast("Promena statusa nije uspela.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
-    <Pressable onPress={onPress}>
-      <View style={[styles.card, isClosed && styles.cardClosed]}>
-        <View style={styles.content}>
-          <View style={styles.timeBlock}>
-            <Text style={[styles.time, isClosed && styles.textMuted]}>{session.time}</Text>
-            <Text style={[styles.duration, isClosed && styles.textMuted]}>
-              {session.duration_min ? `${session.duration_min} min` : "—"}
-            </Text>
-          </View>
-          <View style={[styles.divider, isClosed && { backgroundColor: "#ECE3D6" }]} />
-          <View style={styles.main}>
-            <Text style={[styles.title, isClosed && styles.textMuted]}>{session.title}</Text>
-            <Text style={[styles.booked, isClosed && styles.textMuted]}>
-              {session.room || "Sala"} · {bookedCount} / {session.max_participants}
-            </Text>
-            {isFull && !isClosed && (
-              <View style={styles.fullChip}>
-                <Text style={styles.fullText}>Popunjeno</Text>
-              </View>
-            )}
-            {isClosed && (
-              <View style={styles.closedChip}>
-                <Text style={styles.closedText}>Zatvoreno</Text>
-              </View>
-            )}
-          </View>
-          <Toggle value={session.is_open} onValueChange={onToggleOpen} />
-        </View>
-      </View>
-    </Pressable>
+    <article
+      className={`flex items-center gap-3 rounded-[18px] border p-3 shadow-sm ${
+        closed
+          ? "border-border bg-surface-muted text-ink-muted"
+          : "border-border bg-surface text-ink"
+      } ${onClick ? "cursor-pointer" : ""}`}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (onClick && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          onClick();
+        }
+      }}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+    >
+      <span
+        className={`w-[52px] shrink-0 text-center font-display text-[17px] font-extrabold ${
+          closed ? "text-ink-muted" : "text-ink"
+        }`}
+      >
+        {session.time.slice(0, 5)}
+      </span>
+
+      <span className="h-10 border-l border-border" />
+
+      <span className="min-w-0 flex-1">
+        <span
+          className={`block truncate font-display text-[15px] font-bold ${
+            closed ? "text-ink-muted" : "text-ink"
+          }`}
+        >
+          {session.title}
+        </span>
+        <span
+          className={`mt-0.5 block truncate text-xs font-semibold ${
+            closed ? "text-ink-faint" : "text-sage"
+          }`}
+        >
+          {session.room ?? "Sala"} · {bookedCount}/{session.max_participants}
+        </span>
+      </span>
+
+      <span className="flex shrink-0 items-center gap-2">
+        {isFull && !closed && (
+          <span className="rounded-chip bg-burgundy-tint px-2 py-1 text-[9px] font-extrabold text-burgundy-text2">
+            Popunjeno
+          </span>
+        )}
+        {closed && (
+          <span className="rounded-chip bg-track px-2 py-1 text-[9px] font-extrabold text-ink-muted">
+            Zatvoreno
+          </span>
+        )}
+        <span onClick={(event) => event.stopPropagation()}>
+          <Toggle
+            disabled={submitting}
+            onChange={(open) => void toggle(open)}
+            value={session.is_open}
+          />
+        </span>
+      </span>
+    </article>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.surface,
-    borderColor: Colors.border,
-    borderWidth: 1,
-    borderRadius: Radii.tile[18],
-    padding: Spacing.cardPadding,
-    ...Shadows.card,
-  },
-  cardClosed: {
-    backgroundColor: Colors.surfaceMuted,
-    borderColor: "#ECE3D6",
-  },
-  content: { flexDirection: "row", alignItems: "center", gap: 12 },
-  timeBlock: { gap: 2 },
-  time: { fontFamily: FontFamilies.bricolage[800], fontSize: 17, fontWeight: "800", color: Colors.ink },
-  duration: { fontFamily: FontFamilies.hanken[600], fontSize: 10, fontWeight: "600", color: Colors.inkFaint },
-  divider: { width: 1, height: 40, backgroundColor: Colors.border },
-  main: { flex: 1, gap: 2 },
-  title: { fontFamily: FontFamilies.bricolage[700], fontSize: 15, fontWeight: "700", color: Colors.ink },
-  booked: { fontFamily: FontFamilies.hanken[600], fontSize: 12, fontWeight: "600", color: Colors.sage },
-  fullChip: { backgroundColor: Colors.burgundyTint, paddingHorizontal: 6, paddingVertical: 2, borderRadius: Radii.chip },
-  fullText: { fontFamily: FontFamilies.hanken[700], fontSize: 11, fontWeight: "700", color: Colors.burgundyText2 },
-  closedChip: { backgroundColor: Colors.surfaceMuted, paddingHorizontal: 6, paddingVertical: 2, borderRadius: Radii.chip },
-  closedText: { fontFamily: FontFamilies.hanken[700], fontSize: 11, fontWeight: "700", color: Colors.inkMuted },
-  textMuted: { color: Colors.inkMuted },
-});

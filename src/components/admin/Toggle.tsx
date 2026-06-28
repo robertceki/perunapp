@@ -1,28 +1,30 @@
-import { Pressable, StyleSheet, View } from "react-native";
-import { Colors } from "@/constants/Colors";
-
-interface ToggleProps {
+type ToggleProps = {
   value: boolean;
-  onValueChange: (v: boolean) => void;
+  onChange: (value: boolean) => void;
   disabled?: boolean;
-}
+};
 
-export default function Toggle({ value, onValueChange, disabled = false }: ToggleProps) {
+export default function Toggle({
+  value,
+  onChange,
+  disabled = false,
+}: ToggleProps) {
   return (
-    <Pressable
-      onPress={() => !disabled && onValueChange(!value)}
+    <button
+      aria-checked={value}
+      className={`relative h-[27px] w-[46px] rounded-chip transition-colors ${
+        value ? "bg-burgundy" : "bg-[#DDD3C7]"
+      } disabled:opacity-50`}
       disabled={disabled}
-      style={[styles.container, { opacity: disabled ? 0.5 : 1 }]}
+      onClick={() => onChange(!value)}
+      role="switch"
+      type="button"
     >
-      <View style={[styles.track, { backgroundColor: value ? Colors.burgundy : "#DDD3C7" }]}>
-        <View style={[styles.knob, { left: value ? 22 : 3 }]} />
-      </View>
-    </Pressable>
+      <span
+        className={`absolute top-[3px] left-[3px] h-[21px] w-[21px] rounded-full bg-surface transition-transform ${
+          value ? "translate-x-[19px]" : "translate-x-0"
+        }`}
+      />
+    </button>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { width: 46, height: 27, justifyContent: "center" },
-  track: { width: "100%", height: "100%", borderRadius: 20, position: "relative" },
-  knob: { width: 21, height: 21, borderRadius: 9999, backgroundColor: Colors.surface, position: "absolute", top: 3 },
-});

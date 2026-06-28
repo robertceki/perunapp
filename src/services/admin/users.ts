@@ -1,5 +1,5 @@
-import { supabase } from "../supabase/client";
-import { AdminUser, UpdateUserPatch } from "./types";
+import { supabase } from "@/lib/supabase";
+import type { AdminUser, UpdateUserPatch } from "./types";
 
 export async function listUsers(): Promise<AdminUser[]> {
   const { data, error } = await supabase.rpc("admin_list_users");

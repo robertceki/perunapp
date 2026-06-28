@@ -1,22 +1,44 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
 
-import { Colors } from "@/constants/Colors";
-import { Radii, Shadows, Spacing } from "@/constants/spacing";
-import { FontFamilies, Typography } from "@/constants/typography";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 import { useTrainings } from "@/hooks/useTrainings";
-import { Training } from "@/types/Training";
+import { getBookingErrorMessage } from "@/lib/bookingErrors";
+import type { Training } from "@/types/Training";
 
-const AVATAR_COLORS = [
-  { backgroundColor: Colors.sageTint, color: Colors.sage },
-  { backgroundColor: Colors.goldTint, color: Colors.goldDeep },
-  { backgroundColor: "#F4E6EE", color: Colors.burgundy },
+const AVATAR_PALETTES = [
+  "bg-sage-tint text-sage",
+  "bg-gold-tint text-gold-deep",
+  "bg-burgundy-tint text-burgundy",
 ] as const;
 
-export function TrainingCard({ training }: { training: Training }) {
-  const { session } = useAuth();
-  const { joinSession, leaveSession, reachedLimit } = useTrainings();
+type TrainingCardProps = {
+  training: Training;
+  onJoin: (sessionId: string) => Promise<void>;
+  onLeave: (sessionId: string) => Promise<void>;
+};
 
+function getErrorMessage(caught: unknown) {
+  if (caught instanceof Error) {
+    const rawMessage =
+      "rawMessage" in caught && typeof caught.rawMessage === "string"
+        ? caught.rawMessage
+        : caught.message;
+    return getBookingErrorMessage(rawMessage);
+  }
+
+  return getBookingErrorMessage(String(caught));
+}
+
+export function TrainingCard({
+  training,
+  onJoin,
+  onLeave,
+}: TrainingCardProps) {
+  const { session } = useAuth();
+  const { reachedLimit } = useTrainings();
+  const { showToast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
   const userId = session?.user.id;
   const participants = training.session_participants ?? [];
   const isBooked = participants.some(
@@ -30,433 +52,171 @@ export function TrainingCard({ training }: { training: Training }) {
   const otherParticipants = isBooked
     ? participants.filter((participant) => participant.user_id !== userId)
     : participants;
-  const hasOverflow = bookedCount > 3;
-  const visibleParticipantSlots = hasOverflow ? 2 : 3;
+  const visibleSlots = bookedCount > 3 ? 2 : 3;
   const visibleOthers = otherParticipants.slice(
     0,
-    Math.max(visibleParticipantSlots - (isBooked ? 1 : 0), 0),
+    Math.max(visibleSlots - (isBooked ? 1 : 0), 0),
   );
   const shownCount = visibleOthers.length + (isBooked ? 1 : 0);
   const overflowCount = Math.max(bookedCount - shownCount, 0);
   const cardBackground = fullAndNotBooked
-    ? Colors.surfaceMuted
+    ? "bg-surface-muted"
     : isBooked
-      ? Colors.surfaceWarm
-      : Colors.surface;
+      ? "bg-surface-warm"
+      : "bg-surface";
+  const avatarBorder = isBooked
+    ? "border-surface-warm"
+    : fullAndNotBooked
+      ? "border-surface-muted"
+      : "border-surface";
+
+  async function submit(action: (sessionId: string) => Promise<void>) {
+    setSubmitting(true);
+
+    try {
+      await action(training.id);
+    } catch (caught) {
+      showToast(getErrorMessage(caught));
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
-    <View
-      style={[
-        styles.shadowContainer,
-        { backgroundColor: cardBackground },
-        fullAndNotBooked && styles.noShadow,
-      ]}
+    <article
+      className={`relative overflow-hidden rounded-card border p-4 ${cardBackground} ${isBooked ? "border-gold-border shadow-sm" : "border-border"} ${fullAndNotBooked ? "shadow-none" : "shadow-sm"}`}
     >
-      <View
-        style={[
-          styles.card,
-          { backgroundColor: cardBackground },
-          isBooked && styles.bookedCard,
-          fullAndNotBooked && styles.fullCard,
-        ]}
-      >
-        {isBooked && (
-          <View style={styles.goldAccent}>
-            <View style={styles.goldAccentHighlight} />
-          </View>
+      {isBooked && <div className="absolute inset-y-0 left-0 w-1 bg-gold" />}
+
+      <div className="flex items-start gap-3">
+        <div className="w-[58px] shrink-0 text-center">
+          <span
+            className={`font-display text-lg font-extrabold leading-[21px] ${fullAndNotBooked ? "text-ink-faint" : "text-ink"}`}
+          >
+            {training.time.slice(0, 5)}
+          </span>
+        </div>
+
+        <div className="self-stretch border-l border-border" />
+
+        <div className="min-w-0 flex-1">
+          <h2
+            className={`line-clamp-2 font-display text-[15px] font-bold leading-[18px] ${fullAndNotBooked ? "text-ink-muted" : "text-ink"}`}
+          >
+            {training.title}
+          </h2>
+          <p
+            className={`mt-1 text-xs font-semibold ${fullAndNotBooked ? "text-ink-faint" : "text-sage"}`}
+          >
+            Grupni
+          </p>
+        </div>
+
+        {isBooked ? (
+          <span className="flex shrink-0 items-center gap-1 rounded-chip bg-burgundy py-1 pr-2.5 pl-2 text-[10px] font-extrabold text-surface">
+            <span className="flex h-[15px] w-[15px] items-center justify-center rounded-full bg-gold text-[10px]">
+              ✓
+            </span>
+            Prijavljen
+          </span>
+        ) : fullAndNotBooked ? (
+          <span className="shrink-0 rounded-chip bg-burgundy-tint px-2.5 py-1 text-[10px] font-extrabold text-burgundy-text2">
+            Popunjeno
+          </span>
+        ) : (
+          <span className="shrink-0 rounded-chip bg-gold-tint px-2.5 py-1 text-[10px] font-extrabold text-gold-deep">
+            još {spotsLeft} mesta
+          </span>
         )}
+      </div>
 
-        <View style={styles.headerRow}>
-          <View style={styles.timeBlock}>
-            <Text style={[styles.time, fullAndNotBooked && styles.fullTime]}>
-              {training.time.slice(0, 5)}
-            </Text>
-          </View>
+      <div className="mt-3.5 flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center">
+          <div className="flex shrink-0 items-center">
+            {isBooked && (
+              <span
+                className={`flex h-[29px] w-[29px] items-center justify-center rounded-full border-2 bg-burgundy text-[10px] font-bold text-surface ${avatarBorder}`}
+              >
+                TI
+              </span>
+            )}
 
-          <View
-            style={[
-              styles.divider,
-              isBooked && styles.bookedDivider,
-              fullAndNotBooked && styles.fullDivider,
-            ]}
-          />
+            {visibleOthers.map((participant, index) => {
+              const initials = [
+                participant.profiles?.first_name,
+                participant.profiles?.last_name,
+              ]
+                .filter(Boolean)
+                .map((name) => name?.trim().charAt(0))
+                .join("")
+                .slice(0, 2)
+                .toUpperCase();
 
-          <View style={styles.titleBlock}>
-            <Text
-              numberOfLines={2}
-              style={[styles.title, fullAndNotBooked && styles.fullTitle]}
-            >
-              {training.title}
-            </Text>
-            <Text
-              style={[styles.category, fullAndNotBooked && styles.fullTime]}
-            >
-              Grupni
-            </Text>
-          </View>
-
-          {isBooked ? (
-            <View style={styles.bookedChip}>
-              <View style={styles.checkBadge}>
-                <Text style={styles.check}>✓</Text>
-              </View>
-              <Text style={styles.bookedChipText}>Prijavljen</Text>
-            </View>
-          ) : fullAndNotBooked ? (
-            <View style={styles.fullChip}>
-              <Text style={styles.fullChipText}>Popunjeno</Text>
-            </View>
-          ) : (
-            <View style={styles.spotsChip}>
-              <Text style={styles.spotsChipText}>još {spotsLeft} mesta</Text>
-            </View>
-          )}
-        </View>
-
-        <View style={styles.capacityRow}>
-          <View style={styles.capacityDetails}>
-            <View style={styles.avatarStack}>
-              {isBooked && (
-                <View
-                  style={[
-                    styles.participantAvatar,
-                    styles.youAvatar,
-                    { borderColor: cardBackground },
-                  ]}
+              return (
+                <span
+                  className={`flex h-[29px] w-[29px] items-center justify-center rounded-full border-2 text-[10px] font-bold ${avatarBorder} ${AVATAR_PALETTES[index % AVATAR_PALETTES.length]} ${index > 0 || isBooked ? "-ml-2" : ""}`}
+                  key={participant.user_id}
                 >
-                  <Text style={styles.youAvatarText}>TI</Text>
-                </View>
-              )}
+                  {initials || "—"}
+                </span>
+              );
+            })}
 
-              {visibleOthers.map((participant, index) => {
-                const palette = AVATAR_COLORS[index % AVATAR_COLORS.length];
-                const initials = [
-                  participant.profiles?.first_name,
-                  participant.profiles?.last_name,
-                ]
-                  .filter(Boolean)
-                  .map((name) => name?.trim().charAt(0))
-                  .join("")
-                  .slice(0, 2)
-                  .toUpperCase();
+            {overflowCount > 0 && (
+              <span
+                className={`-ml-2 flex h-[29px] w-[29px] items-center justify-center rounded-full border-2 bg-track text-[10px] font-bold text-gold-deep ${avatarBorder}`}
+              >
+                +{overflowCount}
+              </span>
+            )}
+          </div>
 
-                return (
-                  <View
-                    key={participant.user_id}
-                    style={[
-                      styles.participantAvatar,
-                      shownCount > visibleOthers.length - index &&
-                        styles.overlap,
-                      {
-                        backgroundColor: palette.backgroundColor,
-                        borderColor: cardBackground,
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.avatarText, { color: palette.color }]}>
-                      {initials || "—"}
-                    </Text>
-                  </View>
-                );
-              })}
+          <span
+            className={`ml-2.5 truncate text-[12.5px] font-semibold ${fullAndNotBooked ? "text-ink-faint" : "text-ink-muted"}`}
+          >
+            {bookedCount} / {training.max_participants} mesta
+          </span>
+        </div>
 
-              {overflowCount > 0 && (
-                <View
-                  style={[
-                    styles.participantAvatar,
-                    styles.overflowAvatar,
-                    styles.overlap,
-                    { borderColor: cardBackground },
-                  ]}
-                >
-                  <Text style={styles.overflowText}>+{overflowCount}</Text>
-                </View>
-              )}
-            </View>
+        {isBooked && (
+          <button
+            className="shrink-0 text-xs font-bold text-sage disabled:opacity-50"
+            disabled={submitting}
+            onClick={() => void submit(onLeave)}
+            type="button"
+          >
+            {submitting ? "Sačekaj..." : "Odjavi se"}
+          </button>
+        )}
+      </div>
 
-            <Text
-              style={[
-                styles.capacityText,
-                fullAndNotBooked && styles.fullCapacityText,
-              ]}
-            >
-              {bookedCount} / {training.max_participants} mesta
-            </Text>
-          </View>
-
-          {isBooked && (
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => leaveSession(training.id)}
-              style={({ pressed }) => pressed && styles.pressed}
-            >
-              <Text style={styles.leaveLink}>Odjavi se</Text>
-            </Pressable>
-          )}
-        </View>
-
-        {!isBooked &&
-          (fullAndNotBooked ? (
-            <View style={[styles.action, styles.fullAction]}>
-              <Text style={styles.fullActionText}>Popunjeno</Text>
-            </View>
-          ) : reachedLimit ? (
-            <View style={[styles.action, styles.limitAction]}>
-              <Text style={styles.limitActionText}>
-                Nedeljni limit dostignut
-              </Text>
-            </View>
-          ) : (
-            <Pressable
-              accessibilityRole="button"
-              disabled={!canJoin}
-              onPress={() => joinSession(training.id)}
-              style={({ pressed }) => [
-                styles.action,
-                styles.joinAction,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.joinActionText}>Prijavi se</Text>
-            </Pressable>
-          ))}
-      </View>
-    </View>
+      {!isBooked &&
+        (fullAndNotBooked ? (
+          <button
+            className="mt-3.5 w-full rounded-input bg-track py-3 text-[13.5px] font-bold text-ink-faint"
+            disabled
+            type="button"
+          >
+            Popunjeno
+          </button>
+        ) : reachedLimit ? (
+          <button
+            className="mt-3.5 w-full rounded-input border border-dashed border-field-border bg-paper py-3 text-[13.5px] font-bold text-ink-faint"
+            disabled
+            type="button"
+          >
+            Nedeljni limit dostignut
+          </button>
+        ) : (
+          <button
+            className="mt-3.5 w-full rounded-input bg-burgundy py-3 text-[13.5px] font-bold text-surface shadow-sm active:opacity-90 disabled:opacity-50"
+            disabled={!canJoin || submitting}
+            onClick={() => void submit(onJoin)}
+            type="button"
+          >
+            {submitting ? "Prijava..." : "Prijavi se"}
+          </button>
+        ))}
+    </article>
   );
 }
-
-const styles = StyleSheet.create({
-  shadowContainer: {
-    ...Shadows.card,
-    borderRadius: Radii.card,
-    marginBottom: Spacing.cardGap,
-  },
-  noShadow: {
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  card: {
-    borderColor: Colors.border,
-    borderRadius: Radii.card,
-    borderWidth: 1,
-    overflow: "hidden",
-    padding: Spacing.cardPadding,
-  },
-  bookedCard: {
-    borderColor: Colors.goldBorder,
-  },
-  fullCard: {
-    borderColor: "#ECE3D6",
-  },
-  goldAccent: {
-    backgroundColor: Colors.gold,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-    top: 0,
-    width: 4,
-  },
-  goldAccentHighlight: {
-    backgroundColor: "#DCC388",
-    bottom: 0,
-    height: "50%",
-    left: 0,
-    position: "absolute",
-    right: 0,
-  },
-  headerRow: {
-    alignItems: "flex-start",
-    flexDirection: "row",
-    gap: 13,
-  },
-  timeBlock: {
-    alignItems: "center",
-    width: 58,
-  },
-  time: {
-    ...Typography.time,
-    color: Colors.ink,
-    lineHeight: 21,
-  },
-  divider: {
-    alignSelf: "stretch",
-    backgroundColor: Colors.border,
-    width: 1,
-  },
-  bookedDivider: {
-    backgroundColor: "#EEE3CC",
-  },
-  fullDivider: {
-    backgroundColor: "#ECE3D6",
-  },
-  titleBlock: {
-    flex: 1,
-    minWidth: 0,
-  },
-  title: {
-    ...Typography.cardTitle,
-    color: Colors.ink,
-  },
-  category: {
-    ...Typography.secondary,
-    color: Colors.sage,
-    marginTop: 4,
-  },
-  fullTime: {
-    color: "#9A9098",
-  },
-  fullTitle: {
-    color: "#6E6670",
-  },
-  spotsChip: {
-    backgroundColor: Colors.goldTint,
-    borderRadius: Radii.chip,
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-  },
-  spotsChipText: {
-    ...Typography.chip,
-    color: Colors.goldDeep,
-  },
-  bookedChip: {
-    alignItems: "center",
-    backgroundColor: Colors.burgundy,
-    borderRadius: Radii.chip,
-    flexDirection: "row",
-    gap: 5,
-    paddingBottom: 5,
-    paddingLeft: 7,
-    paddingRight: 10,
-    paddingTop: 5,
-  },
-  checkBadge: {
-    alignItems: "center",
-    backgroundColor: Colors.gold,
-    borderRadius: Radii.avatar,
-    height: 15,
-    justifyContent: "center",
-    width: 15,
-  },
-  check: {
-    color: Colors.surface,
-    fontFamily: FontFamilies.hanken[700],
-    fontSize: 10,
-    fontWeight: "700",
-  },
-  bookedChipText: {
-    ...Typography.chip,
-    color: Colors.surface,
-  },
-  fullChip: {
-    backgroundColor: "#F1E4EC",
-    borderRadius: Radii.chip,
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-  },
-  fullChipText: {
-    ...Typography.chip,
-    color: Colors.burgundyText2,
-  },
-  capacityRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 14,
-  },
-  capacityDetails: {
-    alignItems: "center",
-    flexDirection: "row",
-    minWidth: 0,
-  },
-  avatarStack: {
-    alignItems: "center",
-    flexDirection: "row",
-  },
-  participantAvatar: {
-    alignItems: "center",
-    borderRadius: Radii.avatar,
-    borderWidth: 2,
-    height: 29,
-    justifyContent: "center",
-    width: 29,
-  },
-  overlap: {
-    marginLeft: -9,
-  },
-  youAvatar: {
-    backgroundColor: Colors.burgundy,
-  },
-  youAvatarText: {
-    color: Colors.surface,
-    fontFamily: FontFamilies.hanken[700],
-    fontSize: 10,
-    fontWeight: "700",
-  },
-  avatarText: {
-    fontFamily: FontFamilies.hanken[700],
-    fontSize: 10.5,
-    fontWeight: "700",
-  },
-  overflowAvatar: {
-    backgroundColor: Colors.track,
-  },
-  overflowText: {
-    color: Colors.goldDeep,
-    fontFamily: FontFamilies.hanken[700],
-    fontSize: 10.5,
-    fontWeight: "700",
-  },
-  capacityText: {
-    color: Colors.inkMuted,
-    fontFamily: FontFamilies.hanken[600],
-    fontSize: 12.5,
-    fontWeight: "600",
-    marginLeft: 11,
-  },
-  fullCapacityText: {
-    color: "#9A9098",
-  },
-  leaveLink: {
-    color: Colors.sage,
-    fontFamily: FontFamilies.hanken[700],
-    fontSize: 12,
-    fontWeight: "700",
-  },
-  action: {
-    alignItems: "center",
-    borderRadius: Radii.tile[14],
-    justifyContent: "center",
-    marginTop: 14,
-    paddingVertical: 13,
-  },
-  joinAction: {
-    ...Shadows.primaryButton,
-    backgroundColor: Colors.burgundy,
-  },
-  joinActionText: {
-    ...Typography.primaryButtonCompact,
-    color: Colors.surface,
-  },
-  fullAction: {
-    backgroundColor: "#F0E9DF",
-  },
-  fullActionText: {
-    ...Typography.primaryButtonCompact,
-    color: "#A99FB0",
-  },
-  limitAction: {
-    backgroundColor: Colors.paper,
-    borderColor: "#E2D7C7",
-    borderStyle: "dashed",
-    borderWidth: 1,
-  },
-  limitActionText: {
-    color: "#A99FB0",
-    fontFamily: FontFamilies.hanken[700],
-    fontSize: 13.5,
-    fontWeight: "700",
-  },
-  pressed: {
-    opacity: 0.92,
-  },
-});

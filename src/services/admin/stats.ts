@@ -1,5 +1,5 @@
-import { supabase } from "../supabase/client";
-import {
+import { supabase } from "@/lib/supabase";
+import type {
   MemberSeriesPoint,
   OccupancySummary,
   SlotPopularity,

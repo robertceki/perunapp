@@ -1,18 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { TRAINING_DAYS } from "@/constants/days";
+import { getCurrentWeekDates } from "@/lib/week";
 
-import { Colors } from "@/constants/Colors";
-import { Day, TRAINING_DAYS } from "@/constants/days";
-import { Radii, Shadows, Spacing } from "@/constants/spacing";
-import { FontFamilies } from "@/constants/typography";
-import { getCurrentWeekDates } from "@/utils/week";
-
-interface DayFilterProps {
-  selected: string;
-  setSelected: (day: string) => void;
-}
-
-const DAY_LABELS: Record<Day, string> = {
-  sunday: "NED",
+const DAY_LABELS: Record<string, string> = {
   monday: "PON",
   tuesday: "UTO",
   wednesday: "SRE",
@@ -21,79 +10,44 @@ const DAY_LABELS: Record<Day, string> = {
   saturday: "SUB",
 };
 
-export default function DayFilter({ selected, setSelected }: DayFilterProps) {
+type DayFilterProps = {
+  selectedDay: string;
+  onSelectDay: (day: string) => void;
+};
+
+export default function DayFilter({
+  selectedDay,
+  onSelectDay,
+}: DayFilterProps) {
   const weekDates = getCurrentWeekDates();
 
   return (
-    <View style={styles.container}>
+    <div className="flex gap-2 overflow-x-auto bg-paper px-5 pt-[18px]">
       {TRAINING_DAYS.map((day) => {
-        const active = selected === day;
+        const active = selectedDay === day;
         const dateNumber = String(weekDates[day].getUTCDate()).padStart(2, "0");
 
         return (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ selected: active }}
+          <button
+            aria-pressed={active}
+            className={`flex min-w-[48px] flex-1 flex-col items-center gap-1 rounded-chip py-2.5 active:opacity-90 ${active ? "bg-burgundy shadow-sm" : "bg-transparent"}`}
             key={day}
-            onPress={() => setSelected(day)}
-            style={({ pressed }) => [
-              styles.day,
-              active && styles.activeDay,
-              pressed && styles.pressed,
-            ]}
+            onClick={() => onSelectDay(day)}
+            type="button"
           >
-            <Text style={[styles.label, active && styles.activeLabel]}>
+            <span
+              className={`text-[10px] font-extrabold tracking-[0.05em] ${active ? "text-burgundy-border" : "text-ink-faint"}`}
+            >
               {DAY_LABELS[day]}
-            </Text>
-            <Text style={[styles.date, active && styles.activeDate]}>
+            </span>
+            <span
+              className={`font-display text-base font-extrabold ${active ? "text-surface" : "text-ink"}`}
+            >
               {dateNumber}
-            </Text>
-          </Pressable>
+            </span>
+          </button>
         );
       })}
-    </View>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.paper,
-    flexDirection: "row",
-    gap: 7,
-    paddingHorizontal: Spacing.screenHorizontal,
-    paddingTop: 18,
-  },
-  day: {
-    alignItems: "center",
-    borderRadius: Radii.tile[16],
-    flex: 1,
-    gap: 5,
-    paddingVertical: 10,
-  },
-  activeDay: {
-    ...Shadows.activeDay,
-    backgroundColor: Colors.burgundy,
-  },
-  pressed: {
-    opacity: 0.92,
-  },
-  label: {
-    color: "#A99FA8",
-    fontFamily: FontFamilies.hanken[800],
-    fontSize: 10,
-    fontWeight: "800",
-    letterSpacing: 0.5,
-  },
-  activeLabel: {
-    color: "#E7C9D8",
-  },
-  date: {
-    color: Colors.ink,
-    fontFamily: FontFamilies.bricolage[800],
-    fontSize: 16,
-    fontWeight: "800",
-  },
-  activeDate: {
-    color: Colors.surface,
-  },
-});

@@ -1,32 +1,35 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Colors } from "@/constants/Colors";
-import { Radii } from "@/constants/spacing";
-import { FontFamilies } from "@/constants/typography";
+type FilterChipsProps<Key extends string> = {
+  options: readonly { key: Key; label: string }[];
+  value: Key;
+  onChange: (key: Key) => void;
+};
 
-interface FilterChipsProps<T extends string> {
-  options: { key: T; label: string }[];
-  value: T;
-  onChange: (k: T) => void;
-}
-
-export default function FilterChips<T extends string>({ options, value, onChange }: FilterChipsProps<T>) {
+export default function FilterChips<Key extends string>({
+  options,
+  value,
+  onChange,
+}: FilterChipsProps<Key>) {
   return (
-    <View style={styles.container}>
-      {options.map((opt) => (
-        <Pressable key={opt.key} onPress={() => onChange(opt.key)} style={[
-          styles.chip,
-          { backgroundColor: opt.key === value ? Colors.burgundy : Colors.surface,
-            borderColor: opt.key === value ? "transparent" : Colors.fieldBorder },
-        ]}>
-          <Text style={[styles.label, { color: opt.key === value ? Colors.surface : Colors.ink }]}>{opt.label}</Text>
-        </Pressable>
-      ))}
-    </View>
+    <div className="flex gap-2">
+      {options.map((option) => {
+        const active = option.key === value;
+
+        return (
+          <button
+            aria-pressed={active}
+            className={`rounded-chip border px-3 py-1.5 text-xs font-bold ${
+              active
+                ? "border-burgundy bg-burgundy text-surface"
+                : "border-field-border bg-surface text-ink"
+            }`}
+            key={option.key}
+            onClick={() => onChange(option.key)}
+            type="button"
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flexDirection: "row", gap: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radii.chip, borderWidth: 1 },
-  label: { fontFamily: FontFamilies.hanken[700], fontSize: 12, fontWeight: "700" },
-});

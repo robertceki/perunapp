@@ -1,5 +1,5 @@
-import { supabase } from "../supabase/client";
-import { UpsertSessionInput } from "./types";
+import { supabase } from "@/lib/supabase";
+import type { UpsertSessionInput } from "./types";
 
 export async function setSessionOpen(
   sessionId: string,
