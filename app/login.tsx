@@ -10,6 +10,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/Colors";
 import { Radii, Shadows, Spacing } from "@/constants/spacing";
@@ -43,120 +44,125 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={styles.screen}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.hero}>
-          <Image
-            accessibilityIgnoresInvertColors
-            source={require("../assets/images/perun-emblem-burgundy.png")}
-            style={styles.emblem}
-          />
-        </View>
+    <SafeAreaView edges={["top"]} style={styles.safeArea}>
+      <KeyboardAvoidingView behavior="padding" style={styles.screen}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.hero}>
+            <Image
+              accessibilityIgnoresInvertColors
+              source={require("../assets/images/perun-emblem-burgundy.png")}
+              style={styles.emblem}
+            />
+          </View>
 
-        <View style={styles.content}>
-          <Image
-            accessibilityIgnoresInvertColors
-            source={require("../assets/images/perun-wordmark-burgundy.png")}
-            style={styles.wordmark}
-          />
+          <View style={styles.content}>
+            <Image
+              accessibilityIgnoresInvertColors
+              source={require("../assets/images/perun-wordmark-burgundy.png")}
+              style={styles.wordmark}
+            />
 
-          <View style={styles.fields}>
-            <View>
-              <Text style={styles.label}>EMAIL</Text>
-              <TextInput
-                autoCapitalize="none"
-                autoComplete="email"
-                keyboardType="email-address"
-                onChangeText={setEmail}
-                style={styles.emailInput}
-                value={email}
-              />
-            </View>
-
-            <View>
-              <Text style={styles.label}>LOZINKA</Text>
-              <View
-                style={[
-                  styles.passwordField,
-                  passwordFocused && styles.passwordFieldFocused,
-                ]}
-              >
+            <View style={styles.fields}>
+              <View>
+                <Text style={styles.label}>EMAIL</Text>
                 <TextInput
                   autoCapitalize="none"
-                  autoComplete="password"
-                  onBlur={() => setPasswordFocused(false)}
-                  onChangeText={setPassword}
-                  onFocus={() => setPasswordFocused(true)}
-                  secureTextEntry={!passwordVisible}
-                  style={styles.passwordInput}
-                  value={password}
+                  autoComplete="email"
+                  keyboardType="email-address"
+                  onChangeText={setEmail}
+                  style={styles.emailInput}
+                  value={email}
                 />
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => setPasswordVisible((visible) => !visible)}
-                  style={({ pressed }) => pressed && styles.pressed}
+              </View>
+
+              <View>
+                <Text style={styles.label}>LOZINKA</Text>
+                <View
+                  style={[
+                    styles.passwordField,
+                    passwordFocused && styles.passwordFieldFocused,
+                  ]}
                 >
-                  <Text style={styles.showPassword}>
-                    {passwordVisible ? "Sakrij" : "Prikaži"}
-                  </Text>
-                </Pressable>
+                  <TextInput
+                    autoCapitalize="none"
+                    autoComplete="password"
+                    onBlur={() => setPasswordFocused(false)}
+                    onChangeText={setPassword}
+                    onFocus={() => setPasswordFocused(true)}
+                    secureTextEntry={!passwordVisible}
+                    style={styles.passwordInput}
+                    value={password}
+                  />
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => setPasswordVisible((visible) => !visible)}
+                    style={({ pressed }) => pressed && styles.pressed}
+                  >
+                    <Text style={styles.showPassword}>
+                      {passwordVisible ? "Sakrij" : "Prikaži"}
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
             </View>
-          </View>
 
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => router.push("/forgot-password")}
-            style={({ pressed }) => [
-              styles.forgotPassword,
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text style={styles.link}>Zaboravljena lozinka?</Text>
-          </Pressable>
-
-          {error && <Text style={styles.error}>{error}</Text>}
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ disabled: loading }}
-            disabled={loading}
-            onPress={handleLogin}
-            style={({ pressed }) => [
-              styles.loginButton,
-              loading && styles.disabled,
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text style={styles.loginButtonText}>
-              {loading ? "Učitavanje…" : "Prijavi se"}
-            </Text>
-          </Pressable>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Nemaš nalog? </Text>
             <Pressable
               accessibilityRole="button"
-              onPress={() => router.push("/register")}
-              style={({ pressed }) => pressed && styles.pressed}
+              onPress={() => router.push("/forgot-password")}
+              style={({ pressed }) => [
+                styles.forgotPassword,
+                pressed && styles.pressed,
+              ]}
             >
-              <Text style={styles.joinLink}>Pridruži se</Text>
+              <Text style={styles.link}>Zaboravljena lozinka?</Text>
             </Pressable>
+
+            {error && <Text style={styles.error}>{error}</Text>}
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: loading }}
+              disabled={loading}
+              onPress={handleLogin}
+              style={({ pressed }) => [
+                styles.loginButton,
+                loading && styles.disabled,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={styles.loginButtonText}>
+                {loading ? "Učitavanje…" : "Prijavi se"}
+              </Text>
+            </Pressable>
+
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>Nemaš nalog? </Text>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => router.push("/register")}
+                style={({ pressed }) => pressed && styles.pressed}
+              >
+                <Text style={styles.joinLink}>Pridruži se</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
+  safeArea: {
     backgroundColor: Colors.paper,
     flex: 1,
-    paddingTop: 30,
+  },
+  screen: {
+    flex: 1,
+    paddingTop: 16,
   },
   scrollContent: {
     flexGrow: 1,

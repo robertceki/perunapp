@@ -1,5 +1,6 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/Colors";
 import { Radii, Shadows, Spacing } from "@/constants/spacing";
@@ -8,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function Header() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { profile } = useAuth();
   const initials = [profile?.first_name, profile?.last_name]
     .filter(Boolean)
@@ -17,7 +19,7 @@ export default function Header() {
     .toUpperCase();
 
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
       <View style={styles.brand}>
         <Image
           accessibilityIgnoresInvertColors

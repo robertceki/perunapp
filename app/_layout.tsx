@@ -15,6 +15,8 @@ import {
 } from "@expo-google-fonts/hanken-grotesk";
 
 import { Stack, useRouter, useSegments } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { AuthProvider } from "@/contexts/AuthContext";
 import { TrainingProvider } from "@/contexts/TrainingContext";
@@ -121,10 +123,13 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <TrainingProvider>
-        <RootNavigator />
-      </TrainingProvider>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <StatusBar style="dark" />
+      <AuthProvider>
+        <TrainingProvider>
+          <RootNavigator />
+        </TrainingProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }

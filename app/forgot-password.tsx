@@ -10,6 +10,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/Colors";
 import { Radii, Shadows, Spacing } from "@/constants/spacing";
@@ -41,90 +42,95 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={styles.screen}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.hero}>
-          <Image
-            accessibilityIgnoresInvertColors
-            source={require("../assets/images/perun-emblem-burgundy.png")}
-            style={styles.emblem}
-          />
-        </View>
+    <SafeAreaView edges={["top"]} style={styles.safeArea}>
+      <KeyboardAvoidingView behavior="padding" style={styles.screen}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.hero}>
+            <Image
+              accessibilityIgnoresInvertColors
+              source={require("../assets/images/perun-emblem-burgundy.png")}
+              style={styles.emblem}
+            />
+          </View>
 
-        <View style={styles.content}>
-          <Image
-            accessibilityIgnoresInvertColors
-            source={require("../assets/images/perun-wordmark-burgundy.png")}
-            style={styles.wordmark}
-          />
+          <View style={styles.content}>
+            <Image
+              accessibilityIgnoresInvertColors
+              source={require("../assets/images/perun-wordmark-burgundy.png")}
+              style={styles.wordmark}
+            />
 
-          {sent ? (
-            <View style={styles.successContainer}>
-              <Text style={styles.successTitle}>Uputstva poslana</Text>
-              <Text style={styles.successMessage}>
-                Ako nalog postoji, poslali smo uputstva za reset lozinke na tvoju
-                email adresu.
-              </Text>
-            </View>
-          ) : (
-            <>
-              <View style={styles.fields}>
-                <View>
-                  <Text style={styles.label}>EMAIL</Text>
-                  <TextInput
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    editable={!loading}
-                    keyboardType="email-address"
-                    onChangeText={setEmail}
-                    placeholder=""
-                    style={styles.emailInput}
-                    value={email}
-                  />
-                </View>
-              </View>
-
-              {error && <Text style={styles.error}>{error}</Text>}
-
-              <Pressable
-                accessibilityRole="button"
-                accessibilityState={{ disabled: loading }}
-                disabled={loading}
-                onPress={handleResetPassword}
-                style={({ pressed }) => [
-                  styles.resetButton,
-                  loading && styles.disabled,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <Text style={styles.resetButtonText}>
-                  {loading ? "Učitavanje…" : "Pošalji link za reset"}
+            {sent ? (
+              <View style={styles.successContainer}>
+                <Text style={styles.successTitle}>Uputstva poslana</Text>
+                <Text style={styles.successMessage}>
+                  Ako nalog postoji, poslali smo uputstva za reset lozinke na
+                  tvoju email adresu.
                 </Text>
-              </Pressable>
-            </>
-          )}
+              </View>
+            ) : (
+              <>
+                <View style={styles.fields}>
+                  <View>
+                    <Text style={styles.label}>EMAIL</Text>
+                    <TextInput
+                      autoCapitalize="none"
+                      autoComplete="email"
+                      editable={!loading}
+                      keyboardType="email-address"
+                      onChangeText={setEmail}
+                      placeholder=""
+                      style={styles.emailInput}
+                      value={email}
+                    />
+                  </View>
+                </View>
 
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => router.replace("/login")}
-            style={({ pressed }) => pressed && styles.pressed}
-          >
-            <Text style={styles.backLink}>Nazad na prijavu</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+                {error && <Text style={styles.error}>{error}</Text>}
+
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: loading }}
+                  disabled={loading}
+                  onPress={handleResetPassword}
+                  style={({ pressed }) => [
+                    styles.resetButton,
+                    loading && styles.disabled,
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <Text style={styles.resetButtonText}>
+                    {loading ? "Učitavanje…" : "Pošalji link za reset"}
+                  </Text>
+                </Pressable>
+              </>
+            )}
+
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.replace("/login")}
+              style={({ pressed }) => pressed && styles.pressed}
+            >
+              <Text style={styles.backLink}>Nazad na prijavu</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
+  safeArea: {
     backgroundColor: Colors.paper,
     flex: 1,
-    paddingTop: 30,
+  },
+  screen: {
+    flex: 1,
+    paddingTop: 16,
   },
   scrollContent: {
     flexGrow: 1,

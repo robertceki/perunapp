@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { FilterChips, Toggle } from "@/components/admin";
 import { Colors } from "@/constants/Colors";
@@ -36,6 +37,7 @@ const DAY_OPTIONS: { key: Day; label: string }[] = TRAINING_DAYS.map((day) => ({
 
 export default function TrainingDetailScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
   const isNew = id === "new";
   const { trainings, loading, fetchTrainings } = useTrainings();
@@ -125,7 +127,7 @@ export default function TrainingDetailScreen() {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.navBar}>
+      <View style={[styles.navBar, { paddingTop: insets.top + 16 }]}>
         <Pressable
           accessibilityRole="button"
           onPress={() => router.back()}

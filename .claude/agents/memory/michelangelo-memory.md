@@ -1,8 +1,8 @@
 # Michelangelo — Memory
 
 ## Session counter
-Current session: 10
-Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/session-logs/2026-06-28-S10-michelangelo.md
+Current session: 11
+Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/session-logs/2026-06-28-S11-michelangelo.md
 
 ## Completed tasks
 - T5 (A1) — Fixed tab routing by deleting six dead day-route files (monday–saturday). Kept _layout.tsx as the single-screen renderer. Modified index.tsx to return null (no redirect, prevents dangling link).
@@ -12,6 +12,7 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/se
 - B-M3 + B-M7 (Phase B UI Wave B) — Filled Pregled (dashboard) and Statistika (stats) screens with real RPC data (memberSeries, occupancySummary) and useTrainings hooks. 2×2 stat grid, monthly trend chart with green badge, quick-action button on Pregled. Period filter (12m/6m/all), big member figure, secondary metric tiles on Statistika. Loading + error states, ScrollView wrapper, paper bg, no AdminHeader inside screens. Reused StatTile/BarChart/FilterChips. Inline helpers: MONTHS_LC, DAY_ABBR, monthAbbrevFrom, getTodayEnum, trendPercent. tsc --noEmit PASS; eslint PASS. No commit.
 - B-M4 + B-M5 + B-M6 (Phase B UI Wave C) — Implemented three admin screens (Korisnici, Treninzi, training form [id]). Users screen: load listUsers(), search/filter (svi/aktivni/admini), FlatList of UserRow, edit Modal with stepper for max_sessions_per_week, delete with confirm, re-fetch on mutations. Sessions screen: FlatList with day selector (FilterChips PON–SUB), SessionRow with toggle open/close, real-time re-fetch, empty state text. Form screen (outside tabs): nav bar with back/title, full form with day chips, time/duration row, room/max-participants stepper, status card with Toggle. Validate title/time/max_participants, await upsertSession → fetchTrainings → router.back(). All screens use real services (listUsers, updateUser, deleteUser, setSessionOpen, upsertSession), no new deps, no AdminHeader in tab screens. tsc --noEmit PASS; eslint PASS. No commit.
 - C-A1/A2/A3/A4 (Phase C Group A — Login & Auth) — Fixed keyboard handling in login (KeyboardAvoidingView + ScrollView), built register + forgot-password screens, added register/resetPassword methods to AuthContext, reworked routing to support auth screens + role-based redirect without bouncing shared routes (profile modal). Tagline removed. tsc --noEmit PASS; eslint PASS. No commit.
+- C2 (Phase C Group C #2 — Android status bar overlap) — Wrapped app with SafeAreaProvider + StatusBar style="dark" in RootLayout. Applied useSafeAreaInsets to Header, AdminHeader, and training form navBar (paddingTop: insets.top + existing base). Wrapped auth screens (login/register/forgot-password) with SafeAreaView edges={["top"]} and reduced hardcoded paddingTop from 30 to 16. tsc --noEmit PASS; eslint PASS. No commit.
 
 ## Gotchas
 - npm cache permission issue (`/Users/uros/.npm/_cacache`) prevented `npx` direct invocation; worked around using `npm_config_cache=/tmp/perunapp-npm-cache`.
@@ -22,6 +23,7 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/se
 - B-M3/B-M7: Codex successfully verified tsc + eslint in sandbox, reported DONE. No issues on actual tsc/eslint runs in local env. Both screens load from real RPCs; no hardcoded mock values. Occupancy data null-guarded on both screens.
 - B-M4/M5/M6: Codex timed out (exit 144) on first attempt with large combined prompt. Fell back to direct code writing (Mikey writes, not Codex). Users.tsx and sessions.tsx were auto-formatted by eslint on disk write. Form screen [id].tsx was already fully implemented in Wave A placeholders. All three screens verified: tsc --noEmit PASS, eslint PASS on app/(admin) + src/components/admin.
 - C-A (Phase C Group A): Codex timed out mid-execution on first attempt (exit 143), but patches were already applied to login.tsx before timeout (KeyboardAvoidingView + ScrollView + routing changes visible). Codex also updated AuthContext successfully before timeout. Fell back to direct code writing for register.tsx, forgot-password.tsx, and _layout.tsx routing logic. All files verified tsc + eslint PASS.
+- C2: Codex executed cleanly (no timeout), completed all changes in one pass. Used mixed approach: useSafeAreaInsets for headers/form (component-level hook), SafeAreaView wrapper for auth screens (simpler than hook in each screen). All files verified tsc + eslint PASS.
 
 ## Design system reuse notes
 - All screens use existing Colors, Radii, Spacing, Shadows, Typography constants.
@@ -30,6 +32,7 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/se
 - Both auth screens use KeyboardAvoidingView behavior="padding" + ScrollView for keyboard handling
 - Register form shows IME/PREZIME/EMAIL/LOZINKA fields with show/hide toggle on password
 - Forgot-password shows single EMAIL field with neutral success message
+- SafeAreaView + StatusBar style="dark" ensures top bar does not overlap system status bar (Android clock/battery visible on cream paper bg)
 
 ## Routing logic in app/_layout.tsx (Phase C update)
 - Added "register" and "forgot-password" to publicAuthRoutes list
@@ -49,3 +52,10 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/se
 - Error handling: Alert.alert on catch, always re-fetch to resync after mutation
 - Loading states: ActivityIndicator rendered during fetch; buttons disabled while submitting
 
+## Safe-area inset strategy (C2)
+- SafeAreaProvider wraps RootLayout (below font gate, above AuthProvider)
+- StatusBar style="dark" ensures Android status bar icons are visible on paper bg
+- Headers use useSafeAreaInsets hook: paddingTop: insets.top + 10 (extends bg under status bar)
+- Auth screens use SafeAreaView edges={["top"]} wrapper: simpler, avoids hook clutter in each screen
+- Form nav uses useSafeAreaInsets hook: paddingTop: insets.top + 16 (consistent with headers, no AdminHeader)
+- profile.tsx already had SafeAreaView edges={["top", "bottom"]}, left unchanged

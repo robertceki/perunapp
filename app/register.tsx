@@ -10,6 +10,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/Colors";
 import { Radii, Shadows, Spacing } from "@/constants/spacing";
@@ -45,132 +46,137 @@ export default function RegisterScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={styles.screen}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.hero}>
-          <Image
-            accessibilityIgnoresInvertColors
-            source={require("../assets/images/perun-emblem-burgundy.png")}
-            style={styles.emblem}
-          />
-        </View>
+    <SafeAreaView edges={["top"]} style={styles.safeArea}>
+      <KeyboardAvoidingView behavior="padding" style={styles.screen}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.hero}>
+            <Image
+              accessibilityIgnoresInvertColors
+              source={require("../assets/images/perun-emblem-burgundy.png")}
+              style={styles.emblem}
+            />
+          </View>
 
-        <View style={styles.content}>
-          <Image
-            accessibilityIgnoresInvertColors
-            source={require("../assets/images/perun-wordmark-burgundy.png")}
-            style={styles.wordmark}
-          />
+          <View style={styles.content}>
+            <Image
+              accessibilityIgnoresInvertColors
+              source={require("../assets/images/perun-wordmark-burgundy.png")}
+              style={styles.wordmark}
+            />
 
-          <View style={styles.fields}>
-            <View>
-              <Text style={styles.label}>IME</Text>
-              <TextInput
-                autoCapitalize="words"
-                onChangeText={setFirstName}
-                placeholder=""
-                style={styles.input}
-                value={firstName}
-              />
-            </View>
+            <View style={styles.fields}>
+              <View>
+                <Text style={styles.label}>IME</Text>
+                <TextInput
+                  autoCapitalize="words"
+                  onChangeText={setFirstName}
+                  placeholder=""
+                  style={styles.input}
+                  value={firstName}
+                />
+              </View>
 
-            <View>
-              <Text style={styles.label}>PREZIME</Text>
-              <TextInput
-                autoCapitalize="words"
-                onChangeText={setLastName}
-                placeholder=""
-                style={styles.input}
-                value={lastName}
-              />
-            </View>
+              <View>
+                <Text style={styles.label}>PREZIME</Text>
+                <TextInput
+                  autoCapitalize="words"
+                  onChangeText={setLastName}
+                  placeholder=""
+                  style={styles.input}
+                  value={lastName}
+                />
+              </View>
 
-            <View>
-              <Text style={styles.label}>EMAIL</Text>
-              <TextInput
-                autoCapitalize="none"
-                autoComplete="email"
-                keyboardType="email-address"
-                onChangeText={setEmail}
-                placeholder=""
-                style={styles.input}
-                value={email}
-              />
-            </View>
-
-            <View>
-              <Text style={styles.label}>LOZINKA</Text>
-              <View
-                style={[
-                  styles.passwordField,
-                  passwordFocused && styles.passwordFieldFocused,
-                ]}
-              >
+              <View>
+                <Text style={styles.label}>EMAIL</Text>
                 <TextInput
                   autoCapitalize="none"
-                  autoComplete="password"
-                  onBlur={() => setPasswordFocused(false)}
-                  onChangeText={setPassword}
-                  onFocus={() => setPasswordFocused(true)}
-                  secureTextEntry={!passwordVisible}
-                  style={styles.passwordInput}
-                  value={password}
+                  autoComplete="email"
+                  keyboardType="email-address"
+                  onChangeText={setEmail}
+                  placeholder=""
+                  style={styles.input}
+                  value={email}
                 />
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => setPasswordVisible((visible) => !visible)}
-                  style={({ pressed }) => pressed && styles.pressed}
+              </View>
+
+              <View>
+                <Text style={styles.label}>LOZINKA</Text>
+                <View
+                  style={[
+                    styles.passwordField,
+                    passwordFocused && styles.passwordFieldFocused,
+                  ]}
                 >
-                  <Text style={styles.showPassword}>
-                    {passwordVisible ? "Sakrij" : "Prikaži"}
-                  </Text>
-                </Pressable>
+                  <TextInput
+                    autoCapitalize="none"
+                    autoComplete="password"
+                    onBlur={() => setPasswordFocused(false)}
+                    onChangeText={setPassword}
+                    onFocus={() => setPasswordFocused(true)}
+                    secureTextEntry={!passwordVisible}
+                    style={styles.passwordInput}
+                    value={password}
+                  />
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => setPasswordVisible((visible) => !visible)}
+                    style={({ pressed }) => pressed && styles.pressed}
+                  >
+                    <Text style={styles.showPassword}>
+                      {passwordVisible ? "Sakrij" : "Prikaži"}
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
             </View>
-          </View>
 
-          {error && <Text style={styles.error}>{error}</Text>}
+            {error && <Text style={styles.error}>{error}</Text>}
 
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ disabled: loading }}
-            disabled={loading}
-            onPress={handleRegister}
-            style={({ pressed }) => [
-              styles.registerButton,
-              loading && styles.disabled,
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text style={styles.registerButtonText}>
-              {loading ? "Učitavanje…" : "Napravi nalog"}
-            </Text>
-          </Pressable>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Imaš nalog? </Text>
             <Pressable
               accessibilityRole="button"
-              onPress={() => router.replace("/login")}
-              style={({ pressed }) => pressed && styles.pressed}
+              accessibilityState={{ disabled: loading }}
+              disabled={loading}
+              onPress={handleRegister}
+              style={({ pressed }) => [
+                styles.registerButton,
+                loading && styles.disabled,
+                pressed && styles.pressed,
+              ]}
             >
-              <Text style={styles.loginLink}>Prijavi se</Text>
+              <Text style={styles.registerButtonText}>
+                {loading ? "Učitavanje…" : "Napravi nalog"}
+              </Text>
             </Pressable>
+
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>Imaš nalog? </Text>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => router.replace("/login")}
+                style={({ pressed }) => pressed && styles.pressed}
+              >
+                <Text style={styles.loginLink}>Prijavi se</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
+  safeArea: {
     backgroundColor: Colors.paper,
     flex: 1,
-    paddingTop: 30,
+  },
+  screen: {
+    flex: 1,
+    paddingTop: 16,
   },
   scrollContent: {
     flexGrow: 1,

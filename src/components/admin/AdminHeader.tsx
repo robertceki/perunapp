@@ -1,5 +1,6 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/hooks/useAuth";
 import { Colors } from "@/constants/Colors";
 import { Radii, Shadows, Spacing } from "@/constants/spacing";
@@ -7,6 +8,7 @@ import { FontFamilies, Typography } from "@/constants/typography";
 
 export default function AdminHeader() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { profile } = useAuth();
   const initials = [profile?.first_name, profile?.last_name]
     .filter(Boolean)
@@ -16,7 +18,7 @@ export default function AdminHeader() {
     .toUpperCase();
 
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
       <View style={styles.brand}>
         <Image source={require("../../../assets/images/perun-emblem-burgundy.png")} style={styles.emblem} />
         <Text style={styles.wordmark}>PERUN</Text>
