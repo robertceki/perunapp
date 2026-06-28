@@ -6,7 +6,7 @@ import FilterChips from "@/components/admin/FilterChips";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { useTrainings } from "@/hooks/useTrainings";
-import { upsertSession } from "@/services/admin";
+import { deleteSession, upsertSession } from "@/services/admin";
 import { TRAINING_DAYS, type Day } from "@/constants/days";
 
 const DAY_LABELS: Record<string, string> = {
@@ -47,6 +47,8 @@ export default function TrainingForm() {
   const [isOpen, setIsOpen] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Load existing session if editing
   useEffect(() => {
@@ -100,6 +102,21 @@ export default function TrainingForm() {
       showToast("Greška pri čuvanju treninga");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (isNew) return;
+    setDeleting(true);
+    try {
+      await deleteSession(id);
+      showToast("Trening je obrisan");
+      await fetchTrainings();
+      navigate("/admin/sessions");
+    } catch {
+      showToast("Greška pri brisanju treninga");
+      setDeleting(false);
+      setConfirmDelete(false);
     }
   }
 
@@ -263,6 +280,50 @@ export default function TrainingForm() {
           <Toggle value={isOpen} onChange={setIsOpen} />
         </div>
       </div>
+
+      {/* Delete (edit mode only) */}
+      {!isNew && (
+        <button
+          type="button"
+          onClick={() => setConfirmDelete(true)}
+          disabled={submitting || deleting}
+          className="mt-5 w-full rounded-input border border-[#EAC6BF] bg-surface py-2.5 text-sm font-bold text-[#C0341B] hover:bg-surface-muted disabled:opacity-50"
+        >
+          Obriši trening
+        </button>
+      )}
+
+      {/* Confirm-delete dialog */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-6">
+          <div className="w-full max-w-sm rounded-card bg-surface p-5 shadow-lg">
+            <h2 className="font-display text-lg font-extrabold text-ink">
+              Obriši trening?
+            </h2>
+            <p className="mt-2 text-[13px] font-semibold text-ink-muted">
+              Trening i sve prijave članova biće trajno uklonjeni.
+            </p>
+            <div className="mt-5 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(false)}
+                disabled={deleting}
+                className="flex-1 rounded-input border border-field-border bg-surface py-2.5 font-semibold text-ink hover:bg-surface-muted disabled:opacity-50"
+              >
+                Otkaži
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleDelete()}
+                disabled={deleting}
+                className="flex-1 rounded-input bg-[#C0341B] py-2.5 font-semibold text-surface hover:opacity-90 disabled:opacity-50"
+              >
+                {deleting ? "Brisanje..." : "Obriši"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sticky footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-6 pt-8">

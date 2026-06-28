@@ -13,6 +13,14 @@ export async function setSessionOpen(
   if (error) throw error;
 }
 
+export async function deleteSession(sessionId: string): Promise<void> {
+  const { error } = await supabase.rpc("admin_delete_session", {
+    p_session_id: sessionId,
+  });
+
+  if (error) throw error;
+}
+
 export async function upsertSession(
   input: UpsertSessionInput,
 ): Promise<string> {
