@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -26,7 +27,6 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -47,7 +47,10 @@ export default function RegisterScreen() {
 
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
-      <KeyboardAvoidingView behavior="padding" style={styles.screen}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.screen}
+      >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
@@ -105,18 +108,11 @@ export default function RegisterScreen() {
 
               <View>
                 <Text style={styles.label}>LOZINKA</Text>
-                <View
-                  style={[
-                    styles.passwordField,
-                    passwordFocused && styles.passwordFieldFocused,
-                  ]}
-                >
+                <View style={styles.passwordField}>
                   <TextInput
                     autoCapitalize="none"
                     autoComplete="password"
-                    onBlur={() => setPasswordFocused(false)}
                     onChangeText={setPassword}
-                    onFocus={() => setPasswordFocused(true)}
                     secureTextEntry={!passwordVisible}
                     style={styles.passwordInput}
                     value={password}
@@ -230,13 +226,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: "row",
     paddingHorizontal: 16,
-  },
-  passwordFieldFocused: {
-    borderColor: Colors.gold,
-    shadowColor: Colors.gold,
-    shadowOffset: { height: 0, width: 0 },
-    shadowOpacity: 0.14,
-    shadowRadius: 3,
   },
   passwordInput: {
     ...Typography.fieldText,
