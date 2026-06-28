@@ -14,6 +14,7 @@ import StatTile from "@/components/admin/StatTile";
 import { Colors } from "@/constants/Colors";
 import { Radii, Shadows, Spacing } from "@/constants/spacing";
 import { Typography } from "@/constants/typography";
+import { useAuth } from "@/hooks/useAuth";
 import { useTrainings } from "@/hooks/useTrainings";
 import { memberSeries, occupancySummary } from "@/services/admin/stats";
 import type {
@@ -66,6 +67,7 @@ function trendPercent(series: MemberSeriesPoint[]) {
 
 export default function PregledScreen() {
   const router = useRouter();
+  const { profile } = useAuth();
   const { trainings, loading: trainingsLoading } = useTrainings();
   const [series, setSeries] = useState<MemberSeriesPoint[]>([]);
   const [occupancy, setOccupancy] = useState<OccupancySummary | null>(null);
@@ -73,6 +75,13 @@ export default function PregledScreen() {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+    // Only an admin may call the admin RPCs; never fire them otherwise
+    // (defensive — the (admin) layout also redirects non-admins out).
+    if (profile?.role !== "admin") {
+      setLoading(false);
+      return;
+    }
+
     let active = true;
 
     Promise.all([memberSeries(6), occupancySummary("6")])
@@ -93,7 +102,7 @@ export default function PregledScreen() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [profile?.role]);
 
   if (loading || trainingsLoading) {
     return (

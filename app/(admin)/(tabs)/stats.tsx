@@ -9,6 +9,7 @@ import {
 
 import BarChart from "@/components/admin/BarChart";
 import FilterChips from "@/components/admin/FilterChips";
+import { useAuth } from "@/hooks/useAuth";
 import { Colors } from "@/constants/Colors";
 import { Radii, Shadows, Spacing } from "@/constants/spacing";
 import { FontFamilies, Typography } from "@/constants/typography";
@@ -70,6 +71,7 @@ function trendPercent(series: MemberSeriesPoint[]) {
 }
 
 export default function StatsScreen() {
+  const { profile } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("12");
   const [series, setSeries] = useState<MemberSeriesPoint[]>([]);
   const [occupancy, setOccupancy] = useState<OccupancySummary | null>(null);
@@ -80,6 +82,11 @@ export default function StatsScreen() {
     selectedPeriod === "all" ? 24 : selectedPeriod === "12" ? 12 : 6;
 
   useEffect(() => {
+    if (profile?.role !== "admin") {
+      setLoading(false);
+      return;
+    }
+
     let active = true;
     setLoading(true);
     setHasError(false);
@@ -107,7 +114,7 @@ export default function StatsScreen() {
     return () => {
       active = false;
     };
-  }, [months, selectedPeriod]);
+  }, [months, selectedPeriod, profile?.role]);
 
   if (loading) {
     return (

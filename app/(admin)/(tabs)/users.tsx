@@ -12,6 +12,7 @@ import {
 } from "react-native";
 
 import { FilterChips, Toggle, UserRow } from "@/components/admin";
+import { useAuth } from "@/hooks/useAuth";
 import { Colors } from "@/constants/Colors";
 import { Radii, Shadows, Spacing } from "@/constants/spacing";
 import { FontFamilies, Typography } from "@/constants/typography";
@@ -33,6 +34,7 @@ const ROLE_OPTIONS: { key: UserRole; label: string }[] = [
 ];
 
 export default function KorisniciScreen() {
+  const { profile } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -48,6 +50,10 @@ export default function KorisniciScreen() {
   const [saving, setSaving] = useState(false);
 
   const fetchUsers = useCallback(async () => {
+    if (profile?.role !== "admin") {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setHasError(false);
 
@@ -59,7 +65,7 @@ export default function KorisniciScreen() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [profile?.role]);
 
   useEffect(() => {
     void fetchUsers();
