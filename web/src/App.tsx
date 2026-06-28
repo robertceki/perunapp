@@ -108,7 +108,7 @@ function AppRoutes() {
               <Route path="sessions" element={<Treninzi />} />
               <Route path="stats" element={<Statistika />} />
             </Route>
-            <Route path="/admin/training/new" element={<TrainingForm />} />
+            <Route path="/admin/training/:id" element={<TrainingForm />} />
           </Route>
         </Route>
       </Route>
