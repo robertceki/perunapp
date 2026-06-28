@@ -12,10 +12,15 @@ import FilterChips from "@/components/admin/FilterChips";
 import { Colors } from "@/constants/Colors";
 import { Radii, Shadows, Spacing } from "@/constants/spacing";
 import { FontFamilies, Typography } from "@/constants/typography";
-import { memberSeries, occupancySummary } from "@/services/admin/stats";
+import {
+  memberSeries,
+  occupancySummary,
+  slotPopularity,
+} from "@/services/admin/stats";
 import type {
   MemberSeriesPoint,
   OccupancySummary,
+  SlotPopularity,
 } from "@/services/admin/types";
 
 type Period = "12" | "6" | "all";
@@ -68,6 +73,7 @@ export default function StatsScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("12");
   const [series, setSeries] = useState<MemberSeriesPoint[]>([]);
   const [occupancy, setOccupancy] = useState<OccupancySummary | null>(null);
+  const [slots, setSlots] = useState<SlotPopularity[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const months: 12 | 6 | 24 =
@@ -78,12 +84,17 @@ export default function StatsScreen() {
     setLoading(true);
     setHasError(false);
 
-    Promise.all([memberSeries(months), occupancySummary(selectedPeriod)])
-      .then(([memberData, occupancyData]) => {
+    Promise.all([
+      memberSeries(months),
+      occupancySummary(selectedPeriod),
+      slotPopularity(selectedPeriod),
+    ])
+      .then(([memberData, occupancyData, slotData]) => {
         if (!occupancyData) throw new Error("Occupancy summary is unavailable");
         if (!active) return;
         setSeries(memberData);
         setOccupancy(occupancyData);
+        setSlots(slotData);
       })
       .catch((error: unknown) => {
         console.error(error);
@@ -124,6 +135,8 @@ export default function StatsScreen() {
   const topDay =
     DAY_ABBR[occupancy.top_day] ??
     (occupancy.top_day ? occupancy.top_day.toUpperCase() : "—");
+  const visibleSlots = slots.slice(0, 8);
+  const maxBookings = Math.max(...slots.map((slot) => slot.bookings)) || 1;
 
   return (
     <ScrollView
@@ -183,6 +196,39 @@ export default function StatsScreen() {
             najjači dan: {topDay}
           </Text>
         </View>
+      </View>
+
+      <View style={styles.popularityCard}>
+        <Text style={styles.microLabel}>POPULARNOST TERMINA</Text>
+        <Text style={styles.popularitySubtitle}>Najtraženiji termini</Text>
+
+        {visibleSlots.length === 0 ? (
+          <Text style={styles.emptySlots}>
+            Još nema podataka o prijavama.
+          </Text>
+        ) : (
+          <View style={styles.slotList}>
+            {visibleSlots.map((slot) => {
+              const day =
+                DAY_ABBR[slot.day_of_week] ?? slot.day_of_week.toUpperCase();
+              const barWidth = `${(slot.bookings / maxBookings) * 100}%` as const;
+
+              return (
+                <View key={`${slot.day_of_week}-${slot.time}`}>
+                  <View style={styles.slotHeader}>
+                    <Text style={styles.slotLabel}>
+                      {day} · {slot.time}
+                    </Text>
+                    <Text style={styles.slotBookings}>{slot.bookings}</Text>
+                  </View>
+                  <View style={styles.slotTrack}>
+                    <View style={[styles.slotFill, { width: barWidth }]} />
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -279,5 +325,54 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.hanken[700],
     fontSize: 11,
     fontWeight: "700",
+  },
+  popularityCard: {
+    backgroundColor: Colors.surface,
+    borderColor: Colors.border,
+    borderWidth: 1,
+    borderRadius: Radii.tile[18],
+    padding: Spacing.cardPadding,
+    ...Shadows.card,
+  },
+  popularitySubtitle: {
+    ...Typography.meta,
+    color: Colors.inkMuted,
+  },
+  slotList: {
+    gap: Spacing.cardGap,
+    marginTop: Spacing.section.compact,
+  },
+  slotHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  slotLabel: {
+    fontFamily: FontFamilies.hanken[600],
+    fontSize: 13,
+    fontWeight: "600",
+    color: Colors.ink,
+  },
+  slotBookings: {
+    fontFamily: FontFamilies.bricolage[800],
+    fontSize: 26,
+    fontWeight: "800",
+    color: Colors.ink,
+    textAlign: "right",
+  },
+  slotTrack: {
+    height: 3,
+    overflow: "hidden",
+    backgroundColor: Colors.track,
+  },
+  slotFill: {
+    height: 3,
+    backgroundColor: Colors.gold,
+  },
+  emptySlots: {
+    ...Typography.body,
+    color: Colors.inkMuted,
+    textAlign: "center",
+    marginTop: Spacing.section.compact,
   },
 });

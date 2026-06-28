@@ -1,5 +1,9 @@
 import { supabase } from "../supabase/client";
-import { MemberSeriesPoint, OccupancySummary } from "./types";
+import {
+  MemberSeriesPoint,
+  OccupancySummary,
+  SlotPopularity,
+} from "./types";
 
 export async function memberSeries(
   months: number,
@@ -21,4 +25,15 @@ export async function occupancySummary(
 
   if (error) throw error;
   return (data?.[0] ?? null) as OccupancySummary | null;
+}
+
+export async function slotPopularity(
+  period: string,
+): Promise<SlotPopularity[]> {
+  const { data, error } = await supabase.rpc("admin_slot_popularity", {
+    p_period: period,
+  });
+
+  if (error) throw error;
+  return (data ?? []) as SlotPopularity[];
 }

@@ -21,6 +21,12 @@ export interface OccupancySummary {
   prev_new: number;
 }
 
+export interface SlotPopularity {
+  day_of_week: string;
+  time: string;
+  bookings: number;
+}
+
 export interface UpsertSessionInput {
   id: string | null;
   title: string;
