@@ -65,7 +65,25 @@ the browser (mobile-first, also works on desktop).
   history for reference until web reaches parity, then retire Expo.
 - **RN fixes:** STOPPED — all effort goes to the web rewrite (the open RN bugs are
   platform-specific and won't exist on web).
-- **Responsive:** mobile-first, desktop = centered max-width column (inferred; confirm if wrong).
+- **Responsive:** **MOBILE-WEB FIRST — 99% of use is on phones in a mobile
+  browser.** Design to the phone viewport (the existing 390px frames map ~1:1);
+  desktop is secondary = a centered phone-width column on a plain background.
+
+## Mobile-web specifics (bake in from P0 — this is a phone app via the browser)
+- `<meta name="viewport" content="width=device-width, initial-scale=1,
+  viewport-fit=cover">` so the layout fills the screen incl. notch area.
+- Use **`100dvh`** (not `100vh`) for full-height screens — avoids the iOS Safari
+  URL-bar jump.
+- **Inputs ≥16px font-size** to stop iOS Safari auto-zoom on focus.
+- **Safe-area insets on the web** via CSS `env(safe-area-inset-*)` for the
+  iOS notch / home indicator (replaces RN SafeAreaView — still needed on mobile
+  Safari/Chrome).
+- Touch-first: comfortable hit targets (~44px), no hover-only affordances,
+  remove tap highlight / set `touch-action`, momentum scroll where needed.
+- `-webkit-text-size-adjust: 100%`; respect `prefers-reduced-motion`.
+- PWA (decision below): if yes, add manifest + icons + a basic service worker so
+  it's installable to the home screen and runs full-screen (standalone), feeling
+  like a native app — the natural fit for a 99%-mobile product.
 
 ## Decisions to lock before code (recommendations in bold)
 1. **Framework / router.** **Vite + React + React Router (SPA)** — closest to the
