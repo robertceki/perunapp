@@ -10,9 +10,14 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { TrainingProvider } from "@/contexts/TrainingContext";
 import { useAuth } from "@/hooks/useAuth";
-import AdminHome from "@/screens/AdminHome";
 import MemberHome from "@/screens/MemberHome";
 import Profile from "@/screens/Profile";
+import AdminLayout from "@/screens/admin/AdminLayout";
+import Korisnici from "@/screens/admin/Korisnici";
+import Pregled from "@/screens/admin/Pregled";
+import Statistika from "@/screens/admin/Statistika";
+import TrainingForm from "@/screens/admin/TrainingForm";
+import Treninzi from "@/screens/admin/Treninzi";
 import ForgotPasswordScreen from "@/screens/auth/ForgotPasswordScreen";
 import LoginScreen from "@/screens/auth/LoginScreen";
 import RegisterScreen from "@/screens/auth/RegisterScreen";
@@ -47,7 +52,15 @@ function RequireAdmin() {
   return <Outlet />;
 }
 
-function MemberProviders() {
+function RequireAuthenticated() {
+  const { session } = useAuth();
+
+  if (!session) return <Navigate to="/login" replace />;
+
+  return <Outlet />;
+}
+
+function AppProviders() {
   const { session, profile } = useAuth();
 
   return (
@@ -82,15 +95,22 @@ function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
       </Route>
 
-      <Route element={<RequireMember />}>
-        <Route element={<MemberProviders />}>
-          <Route path="/" element={<MemberHome />} />
+      <Route element={<RequireAuthenticated />}>
+        <Route element={<AppProviders />}>
+          <Route element={<RequireMember />}>
+            <Route path="/" element={<MemberHome />} />
+          </Route>
           <Route path="/profile" element={<Profile />} />
+          <Route element={<RequireAdmin />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Pregled />} />
+              <Route path="users" element={<Korisnici />} />
+              <Route path="sessions" element={<Treninzi />} />
+              <Route path="stats" element={<Statistika />} />
+            </Route>
+            <Route path="/admin/training/new" element={<TrainingForm />} />
+          </Route>
         </Route>
-      </Route>
-
-      <Route element={<RequireAdmin />}>
-        <Route path="/admin" element={<AdminHome />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
