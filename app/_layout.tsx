@@ -14,7 +14,12 @@ import {
   HankenGrotesk_800ExtraBold,
 } from "@expo-google-fonts/hanken-grotesk";
 
-import { Stack, useRouter, useSegments } from "expo-router";
+import {
+  Stack,
+  useRootNavigationState,
+  useRouter,
+  useSegments,
+} from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -29,8 +34,13 @@ function RootNavigator() {
 
   const router = useRouter();
   const segments = useSegments();
+  const navState = useRootNavigationState();
 
   useEffect(() => {
+    // Don't navigate until the root navigator is mounted, otherwise
+    // router.replace throws "REPLACE ... was not handled by any navigator".
+    if (!navState?.key) return;
+
     if (loading) return;
 
     if (session && !profile) return;
@@ -73,7 +83,7 @@ function RootNavigator() {
         }
       }
     }
-  }, [session, loading, profile, segments, router]);
+  }, [session, loading, profile, segments, router, navState?.key]);
 
   // Wait for auth AND (if signed in) the profile/role before rendering any
   // stack, so screens never mount before auth is ready — otherwise admin data
