@@ -7,9 +7,10 @@ import FilterChips from "@/components/admin/FilterChips";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { useTrainings } from "@/hooks/useTrainings";
-import { setSessionOpen } from "@/services/admin";
+import { deleteSession, setSessionOpen } from "@/services/admin";
 import { TRAINING_DAYS, type Day } from "@/constants/days";
 import { getCurrentWeekDates } from "@/lib/week";
+import type { Training } from "@/types/Training";
 
 const DAY_LABELS: Record<string, string> = {
   monday: "Ponedeljak",
@@ -26,6 +27,22 @@ export default function Treninzi() {
   const { showToast } = useToast();
   const { fetchTrainings, getTrainingsByDay, loading } = useTrainings();
   const [selectedDay, setSelectedDay] = useState<Day>("monday");
+  const [pendingDelete, setPendingDelete] = useState<Training | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete(session: Training) {
+    setDeleting(true);
+    try {
+      await deleteSession(session.id);
+      showToast("Trening je obrisan");
+      await fetchTrainings();
+    } catch {
+      showToast("Greška pri brisanju treninga");
+    } finally {
+      setDeleting(false);
+      setPendingDelete(null);
+    }
+  }
 
   // Guard: only admins
   if (profile?.role !== "admin") {
@@ -115,9 +132,43 @@ export default function Treninzi() {
                 bookedCount={session.session_participants?.length ?? 0}
                 onToggleOpen={(open) => handleToggleOpen(session.id, open)}
                 onClick={() => navigate(`/admin/training/${session.id}`)}
+                onLongPress={() => setPendingDelete(session)}
               />
             ))
           )}
+        </div>
+      )}
+
+      {/* Long-press confirm-delete dialog */}
+      {pendingDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-6">
+          <div className="w-full max-w-sm rounded-card bg-surface p-5 shadow-lg">
+            <h2 className="font-display text-lg font-extrabold text-ink">
+              Obriši trening?
+            </h2>
+            <p className="mt-2 text-[13px] font-semibold text-ink-muted">
+              {pendingDelete.title} ({pendingDelete.time.slice(0, 5)}) i sve
+              prijave članova biće trajno uklonjeni.
+            </p>
+            <div className="mt-5 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setPendingDelete(null)}
+                disabled={deleting}
+                className="flex-1 rounded-input border border-field-border bg-surface py-2.5 font-semibold text-ink hover:bg-surface-muted disabled:opacity-50"
+              >
+                Otkaži
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleDelete(pendingDelete)}
+                disabled={deleting}
+                className="flex-1 rounded-input bg-[#C0341B] py-2.5 font-semibold text-surface hover:opacity-90 disabled:opacity-50"
+              >
+                {deleting ? "Brisanje..." : "Obriši"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </section>

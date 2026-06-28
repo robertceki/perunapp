@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import Toggle from "@/components/admin/Toggle";
 import { useToast } from "@/hooks/useToast";
@@ -9,18 +9,62 @@ type SessionRowProps = {
   bookedCount: number;
   onToggleOpen: (open: boolean) => Promise<void>;
   onClick?: () => void;
+  onLongPress?: () => void;
 };
+
+const LONG_PRESS_MS = 500;
+const MOVE_CANCEL_PX = 10;
 
 export default function SessionRow({
   session,
   bookedCount,
   onToggleOpen,
   onClick,
+  onLongPress,
 }: SessionRowProps) {
   const { showToast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const isFull = bookedCount >= session.max_participants;
   const closed = !session.is_open;
+
+  // Long-press to delete: a timer fires after a hold; movement/scroll cancels it,
+  // and a fired long-press suppresses the row's navigate click.
+  const timerRef = useRef<number | null>(null);
+  const firedRef = useRef(false);
+  const startRef = useRef<{ x: number; y: number } | null>(null);
+
+  function clearTimer() {
+    if (timerRef.current !== null) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }
+
+  function handlePointerDown(event: React.PointerEvent) {
+    if (!onLongPress) return;
+    firedRef.current = false;
+    startRef.current = { x: event.clientX, y: event.clientY };
+    clearTimer();
+    timerRef.current = window.setTimeout(() => {
+      firedRef.current = true;
+      onLongPress();
+    }, LONG_PRESS_MS);
+  }
+
+  function handlePointerMove(event: React.PointerEvent) {
+    if (timerRef.current === null || !startRef.current) return;
+    const dx = Math.abs(event.clientX - startRef.current.x);
+    const dy = Math.abs(event.clientY - startRef.current.y);
+    if (dx > MOVE_CANCEL_PX || dy > MOVE_CANCEL_PX) clearTimer();
+  }
+
+  function handleClick() {
+    if (firedRef.current) {
+      firedRef.current = false;
+      return; // long-press already handled this interaction
+    }
+    onClick?.();
+  }
 
   async function toggle(open: boolean) {
     setSubmitting(true);
@@ -36,12 +80,20 @@ export default function SessionRow({
 
   return (
     <article
-      className={`flex items-center gap-3 rounded-[18px] border p-3 shadow-sm ${
+      className={`flex select-none items-center gap-3 rounded-[18px] border p-3 shadow-sm [-webkit-touch-callout:none] ${
         closed
           ? "border-border bg-surface-muted text-ink-muted"
           : "border-border bg-surface text-ink"
       } ${onClick ? "cursor-pointer" : ""}`}
-      onClick={onClick}
+      onClick={handleClick}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={clearTimer}
+      onPointerCancel={clearTimer}
+      onPointerLeave={clearTimer}
+      onContextMenu={(event) => {
+        if (onLongPress) event.preventDefault();
+      }}
       onKeyDown={(event) => {
         if (onClick && (event.key === "Enter" || event.key === " ")) {
           event.preventDefault();
@@ -89,7 +141,10 @@ export default function SessionRow({
             Zatvoreno
           </span>
         )}
-        <span onClick={(event) => event.stopPropagation()}>
+        <span
+          onClick={(event) => event.stopPropagation()}
+          onPointerDown={(event) => event.stopPropagation()}
+        >
           <Toggle
             disabled={submitting}
             onChange={(open) => void toggle(open)}
