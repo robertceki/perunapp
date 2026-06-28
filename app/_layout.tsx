@@ -75,7 +75,10 @@ function RootNavigator() {
     }
   }, [session, loading, profile, segments, router]);
 
-  if (loading) {
+  // Wait for auth AND (if signed in) the profile/role before rendering any
+  // stack, so screens never mount before auth is ready — otherwise admin data
+  // loads fire as anon (not_admin) and role routing flashes the wrong stack.
+  if (loading || (session && !profile)) {
     return (
       <View
         style={{

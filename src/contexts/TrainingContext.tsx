@@ -91,9 +91,17 @@ export function TrainingProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   };
 
+  // Only fetch once authenticated — the anon role has no grants on `sessions`
+  // (RLS hardening), and we must refetch when the signed-in user changes.
   useEffect(() => {
-    fetchTrainings();
-  }, []);
+    if (session) {
+      fetchTrainings();
+    } else {
+      setTrainings([]);
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.id]);
 
   // -------------------------
   // FILTER
