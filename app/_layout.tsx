@@ -33,32 +33,42 @@ function RootNavigator() {
 
     if (session && !profile) return;
 
-    const inLoginPage = segments[0] === "login";
-    const inAdminPage = segments[0] === "(admin)";
-    const inTabsPage = segments[0] === "(tabs)";
+    // Public auth routes that don't require authentication
+    const publicAuthRoutes = ["login", "register", "forgot-password"];
+    const inAuthRoute = publicAuthRoutes.includes(segments[0]);
 
-    if (!session && !inLoginPage) {
+    // Shared routes accessible by both admins and members
+    const sharedRoutes = ["profile"];
+    const inShared = sharedRoutes.includes(segments[0]);
+
+    // Not logged in: redirect to login if not already on a public auth route
+    if (!session && !inAuthRoute) {
       router.replace("/login");
       return;
     }
 
-    if (session && profile && inLoginPage) {
-      if (profile.role === "admin") {
-        router.replace("/(admin)");
-      } else {
-        router.replace("/(tabs)");
-      }
+    // Logged in but still waiting for profile: do nothing, let spinner show
+    if (session && !profile) {
       return;
     }
 
-    if (session && profile && !inLoginPage) {
-      if (profile.role === "admin" && !inAdminPage) {
-        router.replace("/(admin)");
+    // Logged in with profile: enforce role-based routing
+    if (session && profile) {
+      // Allow shared routes without bouncing
+      if (inShared) {
         return;
       }
-      if (profile.role !== "admin" && !inTabsPage) {
-        router.replace("/(tabs)");
-        return;
+
+      if (profile.role === "admin") {
+        // Admin: redirect away from public auth routes or member (tabs)
+        if (inAuthRoute || segments[0] === "(tabs)") {
+          router.replace("/(admin)");
+        }
+      } else {
+        // Member: redirect away from public auth routes or admin routes
+        if (inAuthRoute || segments[0] === "(admin)") {
+          router.replace("/(tabs)");
+        }
       }
     }
   }, [session, loading, profile, segments, router]);
@@ -80,6 +90,8 @@ function RootNavigator() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" />
+      <Stack.Screen name="register" />
+      <Stack.Screen name="forgot-password" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="(admin)" />
       <Stack.Screen name="profile" options={{ presentation: "modal" }} />

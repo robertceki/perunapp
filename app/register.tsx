@@ -16,10 +16,12 @@ import { Radii, Shadows, Spacing } from "@/constants/spacing";
 import { FontFamilies, Typography } from "@/constants/typography";
 import { useAuth } from "@/hooks/useAuth";
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { register } = useAuth();
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -27,12 +29,12 @@ export default function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      await login(email, password);
+      await register(email, password, firstName, lastName);
 
       router.replace("/");
     } catch (e) {
@@ -65,13 +67,36 @@ export default function LoginScreen() {
 
           <View style={styles.fields}>
             <View>
+              <Text style={styles.label}>IME</Text>
+              <TextInput
+                autoCapitalize="words"
+                onChangeText={setFirstName}
+                placeholder=""
+                style={styles.input}
+                value={firstName}
+              />
+            </View>
+
+            <View>
+              <Text style={styles.label}>PREZIME</Text>
+              <TextInput
+                autoCapitalize="words"
+                onChangeText={setLastName}
+                placeholder=""
+                style={styles.input}
+                value={lastName}
+              />
+            </View>
+
+            <View>
               <Text style={styles.label}>EMAIL</Text>
               <TextInput
                 autoCapitalize="none"
                 autoComplete="email"
                 keyboardType="email-address"
                 onChangeText={setEmail}
-                style={styles.emailInput}
+                placeholder=""
+                style={styles.input}
                 value={email}
               />
             </View>
@@ -107,43 +132,32 @@ export default function LoginScreen() {
             </View>
           </View>
 
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => router.push("/forgot-password")}
-            style={({ pressed }) => [
-              styles.forgotPassword,
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text style={styles.link}>Zaboravljena lozinka?</Text>
-          </Pressable>
-
           {error && <Text style={styles.error}>{error}</Text>}
 
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ disabled: loading }}
             disabled={loading}
-            onPress={handleLogin}
+            onPress={handleRegister}
             style={({ pressed }) => [
-              styles.loginButton,
+              styles.registerButton,
               loading && styles.disabled,
               pressed && styles.pressed,
             ]}
           >
-            <Text style={styles.loginButtonText}>
-              {loading ? "Učitavanje…" : "Prijavi se"}
+            <Text style={styles.registerButtonText}>
+              {loading ? "Učitavanje…" : "Napravi nalog"}
             </Text>
           </Pressable>
 
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Nemaš nalog? </Text>
+            <Text style={styles.footerText}>Imaš nalog? </Text>
             <Pressable
               accessibilityRole="button"
-              onPress={() => router.push("/register")}
+              onPress={() => router.replace("/login")}
               style={({ pressed }) => pressed && styles.pressed}
             >
-              <Text style={styles.joinLink}>Pridruži se</Text>
+              <Text style={styles.loginLink}>Prijavi se</Text>
             </Pressable>
           </View>
         </View>
@@ -192,7 +206,7 @@ const styles = StyleSheet.create({
     color: Colors.inkFaint,
     marginBottom: 7,
   },
-  emailInput: {
+  input: {
     ...Typography.fieldText,
     backgroundColor: Colors.surface,
     borderColor: Colors.fieldBorder,
@@ -231,23 +245,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginLeft: 12,
   },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginTop: 12,
-  },
-  link: {
-    color: Colors.sage,
-    fontFamily: FontFamilies.hanken[700],
-    fontSize: 13,
-    fontWeight: "700",
-  },
   error: {
     color: "#C0341B",
     fontFamily: FontFamilies.hanken[600],
     fontSize: 12,
     marginTop: 10,
   },
-  loginButton: {
+  registerButton: {
     ...Shadows.primaryButton,
     alignItems: "center",
     backgroundColor: Colors.burgundy,
@@ -255,7 +259,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
     paddingVertical: 16,
   },
-  loginButtonText: {
+  registerButtonText: {
     ...Typography.primaryButton,
     color: Colors.surface,
   },
@@ -271,10 +275,9 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
     fontWeight: "400",
   },
-  joinLink: {
+  loginLink: {
     color: Colors.burgundy,
     fontFamily: FontFamilies.hanken[700],
-    fontSize: 13.5,
     fontWeight: "700",
   },
   disabled: {
