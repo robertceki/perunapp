@@ -52,6 +52,8 @@ export default function Profile() {
       return dayDifference || first.time.localeCompare(second.time);
     });
 
+  const isAdmin = profile?.role === "admin";
+
   async function handleLogout() {
     setLoggingOut(true);
 
@@ -61,6 +63,58 @@ export default function Profile() {
       showToast("Odjava nije uspela. Pokušajte ponovo.");
       setLoggingOut(false);
     }
+  }
+
+  // Admin profile: identity + logout only — no member booking/limit sections.
+  if (isAdmin) {
+    return (
+      <main
+        className="min-h-[100dvh] bg-paper pb-[calc(28px+env(safe-area-inset-bottom))]"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
+        <nav className="flex items-center justify-between px-5 pt-3">
+          <Link
+            aria-label="Nazad"
+            className="flex h-[38px] w-[38px] items-center justify-center rounded-input border border-border bg-surface text-2xl font-bold leading-none text-burgundy active:opacity-85"
+            to="/admin"
+          >
+            ‹
+          </Link>
+          <h1 className="font-display text-base font-bold text-ink">Profil</h1>
+          <div className="w-[38px]" />
+        </nav>
+
+        <section className="flex flex-col items-center px-5 pt-[18px] text-center">
+          <div className="flex h-[86px] w-[86px] items-center justify-center rounded-full border border-border shadow-sm">
+            <div className="flex h-[84px] w-[84px] items-center justify-center rounded-full border-[3px] border-surface bg-navy font-display text-[32px] font-extrabold text-surface">
+              {initials || "A"}
+            </div>
+          </div>
+          <h2 className="mt-3.5 font-display text-[21px] font-extrabold text-ink">
+            {fullName || "Administrator"}
+          </h2>
+          <span className="mt-1 rounded-chip border border-burgundy-border bg-burgundy-tint px-2.5 py-1 text-[10px] font-extrabold tracking-[0.08em] text-burgundy">
+            ADMIN
+          </span>
+          {session?.user.email ? (
+            <p className="mt-2 text-[13px] font-semibold text-ink-muted">
+              {session.user.email}
+            </p>
+          ) : null}
+        </section>
+
+        <div className="px-4 pt-7">
+          <button
+            className="w-full rounded-input border border-burgundy bg-transparent py-3.5 text-sm font-bold text-burgundy active:opacity-85 disabled:opacity-50"
+            disabled={loggingOut}
+            onClick={() => void handleLogout()}
+            type="button"
+          >
+            {loggingOut ? "Odjava..." : "Odjavi se"}
+          </button>
+        </div>
+      </main>
+    );
   }
 
   return (

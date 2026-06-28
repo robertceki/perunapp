@@ -11,7 +11,13 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.png", "pwa-192.png", "pwa-512.png"],
+      includeAssets: [
+        "favicon.png",
+        "apple-touch-icon.png",
+        "pwa-192.png",
+        "pwa-512.png",
+        "maskable-512.png",
+      ],
       manifest: {
         name: "Perun Trening Centar",
         short_name: "Perun",
@@ -24,10 +30,10 @@ export default defineConfig({
         background_color: "#FBF7F1",
         theme_color: "#58003D",
         icons: [
-          { src: "/pwa-192.png", sizes: "192x192", type: "image/png" },
-          { src: "/pwa-512.png", sizes: "512x512", type: "image/png" },
+          { src: "/pwa-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: "/pwa-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
           {
-            src: "/pwa-512.png",
+            src: "/maskable-512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
