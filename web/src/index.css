@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Perun brand theme (ported from the RN design tokens). Tailwind v4 @theme
+   exposes these as utilities (bg-paper, text-ink, rounded-card, etc.).
+--------------------------------------------------------------------------- */
+@theme {
+  /* Colors */
+  --color-paper: #fbf7f1;
+  --color-surface: #ffffff;
+  --color-surface-warm: #fffdf8;
+  --color-surface-muted: #faf6ef;
+  --color-ink: #221f2b;
+  --color-ink-muted: #8b8192;
+  --color-ink-faint: #9a8fa0;
+  --color-burgundy: #58003d;
+  --color-burgundy-tint: #f6e9f0;
+  --color-burgundy-border: #eccfdf;
+  --color-burgundy-text2: #9a6385;
+  --color-gold: #c6a35c;
+  --color-gold-deep: #9a7b33;
+  --color-gold-tint: #f6efdf;
+  --color-gold-border: #e8d9b5;
+  --color-sage: #586056;
+  --color-sage-tint: #eaede7;
+  --color-navy: #22222a;
+  --color-border: #f0e8dd;
+  --color-track: #efe7da;
+  --color-field-border: #ece2d4;
+
+  /* Fonts (loaded via Google Fonts <link> in index.html) */
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-sans: "Hanken Grotesk", system-ui, sans-serif;
+
+  /* Radii */
+  --radius-card: 22px;
+  --radius-input: 15px;
+  --radius-chip: 20px;
+}
+
+/* ---------------------------------------------------------------------------
+   Mobile-web base (99% phone usage). Phone-first; desktop = centered column.
+--------------------------------------------------------------------------- */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App shell: full dynamic viewport height (avoids iOS URL-bar jump), centered
+   phone-width column on larger screens. Safe-area padding handled per-screen
+   via env() where needed. */
+#root {
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--color-paper);
+}
+
+/* Inputs ≥16px so iOS Safari doesn't auto-zoom on focus. */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  font-size: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
