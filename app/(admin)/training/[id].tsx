@@ -35,6 +35,16 @@ const DAY_OPTIONS: { key: Day; label: string }[] = TRAINING_DAYS.map((day) => ({
   }[day],
 }));
 
+const TIME_PATTERN = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
+
+const formatTime = (value: string) => {
+  const digits = value.replace(/\D/g, "").slice(0, 4);
+
+  return digits.length > 2
+    ? `${digits.slice(0, 2)}:${digits.slice(2)}`
+    : digits;
+};
+
 export default function TrainingDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -45,12 +55,12 @@ export default function TrainingDetailScreen() {
   const [title, setTitle] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState<Day>("monday");
   const [time, setTime] = useState("");
-  const [room, setRoom] = useState("");
-  const [durationMin, setDurationMin] = useState<number | null>(null);
   const [maxParticipants, setMaxParticipants] = useState(10);
   const [isOpen, setIsOpen] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [saveAttempted, setSaveAttempted] = useState(false);
   const [initializedId, setInitializedId] = useState<string | null>(null);
+  const isTimeValid = TIME_PATTERN.test(time.trim());
 
   useEffect(() => {
     if (!training || initializedId === training.id) return;
@@ -61,9 +71,7 @@ export default function TrainingDetailScreen() {
         ? (training.day_of_week as Day)
         : "monday",
     );
-    setTime(training.time);
-    setRoom(training.room ?? "");
-    setDurationMin(training.duration_min);
+    setTime(formatTime(training.time));
     setMaxParticipants(Math.min(50, Math.max(1, training.max_participants)));
     setIsOpen(training.is_open);
     setInitializedId(training.id);
@@ -73,10 +81,19 @@ export default function TrainingDetailScreen() {
     const normalizedTitle = title.trim();
     const normalizedTime = time.trim();
 
-    if (!normalizedTitle || !normalizedTime || maxParticipants < 1) {
+    if (!normalizedTitle || maxParticipants < 1) {
       Alert.alert(
         "Proverite podatke",
         "Naziv, vreme i najmanje jedan učesnik su obavezni.",
+      );
+      return;
+    }
+
+    if (!TIME_PATTERN.test(normalizedTime)) {
+      setSaveAttempted(true);
+      Alert.alert(
+        "Proverite vreme",
+        "Vreme mora biti u formatu HH:MM (00:00–23:59).",
       );
       return;
     }
@@ -86,8 +103,8 @@ export default function TrainingDetailScreen() {
       title: normalizedTitle,
       day_of_week: dayOfWeek,
       time: normalizedTime,
-      room: room.trim() || null,
-      duration_min: durationMin,
+      room: null,
+      duration_min: null,
       max_participants: maxParticipants,
       is_open: isOpen,
     };
@@ -171,35 +188,11 @@ export default function TrainingDetailScreen() {
             <Text style={styles.fieldLabel}>VREME</Text>
             <TextInput
               value={time}
-              onChangeText={setTime}
+              onChangeText={(value) => setTime(formatTime(value))}
               placeholder="18:00"
               placeholderTextColor={Colors.inkFaint}
-              editable={!submitting}
-              style={styles.input}
-            />
-          </View>
-          <View style={styles.columnField}>
-            <Text style={styles.fieldLabel}>TRAJANJE (MIN)</Text>
-            <TextInput
-              value={durationMin?.toString() ?? ""}
-              onChangeText={(value) =>
-                setDurationMin(
-                  value === "" ? null : Number(value.replace(/\D/g, "")),
-                )
-              }
               keyboardType="number-pad"
-              editable={!submitting}
-              style={styles.input}
-            />
-          </View>
-        </View>
-
-        <View style={styles.fieldRow}>
-          <View style={styles.columnField}>
-            <Text style={styles.fieldLabel}>SALA</Text>
-            <TextInput
-              value={room}
-              onChangeText={setRoom}
+              maxLength={5}
               editable={!submitting}
               style={styles.input}
             />
@@ -254,8 +247,12 @@ export default function TrainingDetailScreen() {
           </Pressable>
           <Pressable
             onPress={() => void submit()}
-            disabled={submitting}
-            style={[styles.saveButton, submitting && styles.buttonDisabled]}
+            disabled={submitting || (saveAttempted && !isTimeValid)}
+            style={[
+              styles.saveButton,
+              (submitting || (saveAttempted && !isTimeValid)) &&
+                styles.buttonDisabled,
+            ]}
           >
             {submitting ? (
               <ActivityIndicator color={Colors.surface} />

@@ -242,6 +242,7 @@ const styles = StyleSheet.create({
     gap: 11,
   },
   tileRow: {
+    alignItems: "stretch",
     flexDirection: "row",
     gap: 11,
   },

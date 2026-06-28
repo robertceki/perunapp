@@ -1,8 +1,8 @@
 # Donatello — Memory
 
 ## Session counter
-Current session: 5
-Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/session-logs/2026-06-27-S5-donatello.md
+Current session: 6
+Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/session-logs/2026-06-28-S6-donatello.md
 
 ## Completed tasks
 - T7 (S2): Untrack .env, fix .gitignore, add .env.example — DONE
@@ -16,6 +16,7 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/se
 - T3+T4 (S3+S4): Atomic booking enforcement RPC + weekly-wipe pg_cron — DONE
 - B-D3 (S4): Create admin RPCs migration (is_admin + 5 admin functions) — DONE
 - B-D5 (S5): Types + admin service layer + admin_list_users RPC — DONE
+- B5 (S6/Phase C): Add enabled param to admin_update_user + inactive booking block — DONE
 
 ## Gotchas
 - Six tab-route files (monday–saturday.tsx + index.tsx redirect) were already deleted by another agent before these tasks. Do NOT touch app/(tabs)/ unless fixing the one import in _layout.tsx (which was done for T13).
@@ -26,3 +27,4 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/se
 - T3+T4: Codex created the RPC with a per-user advisory lock in addition to the per-session lock. This serializes concurrent joins to *different* sessions when the same user would exceed weekly limit. Added constraint_name check in unique_violation handler to distinguish from future constraints.
 - B-D3: Migration creates is_admin() helper (SQL, stable) + 5 plpgsql admin functions. All admin functions guard via `if not public.is_admin(auth.uid()) then raise...`. Grants set: revoke all from public/anon, grant execute to authenticated. All functions match task spec names exactly (service layer depends on them).
 - B-D5: admin_list_users() RPC joins profiles with auth.users to include email (which lives in auth.users, not profiles). All admin service wrappers use explicit type casts (no `any`, no `@ts-ignore`) on untyped supabase client. tsc --noEmit passes cleanly.
+- B5: Two migrations created in sequence. First (20260628110000): DROP the old admin_update_user(uuid,text,text,text,integer) signature, then CREATE new overload with p_enabled boolean param + coalesce logic for enabled field. Second (20260628110100): RECREATE join_session with full logic copied from 20260627170100_join_session_closed.sql, but with inline check for enabled=false placed after not_authenticated check (before advisory locks). Inactive users raise 'account_inactive' exception. Both migrations wrap in begin/commit, revoke/grant authenticated.

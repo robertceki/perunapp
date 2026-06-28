@@ -255,6 +255,7 @@ const styles = StyleSheet.create({
     color: "#4E7A5C",
   },
   secondaryRow: {
+    alignItems: "stretch",
     flexDirection: "row",
     gap: 12,
   },

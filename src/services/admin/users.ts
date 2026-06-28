@@ -18,6 +18,7 @@ export async function updateUser(
     p_last_name: patch.last_name ?? null,
     p_role: patch.role ?? null,
     p_max_sessions_per_week: patch.max_sessions_per_week ?? null,
+    p_enabled: patch.enabled ?? null,
   });
 
   if (error) throw error;

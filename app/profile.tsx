@@ -8,7 +8,6 @@ import { Radii, Shadows } from "@/constants/spacing";
 import { FontFamilies, Typography } from "@/constants/typography";
 import { useAuth } from "@/hooks/useAuth";
 import { useTrainings } from "@/hooks/useTrainings";
-import { clampWeeklyLimit } from "@/utils/limits";
 import { getCurrentWeekDates } from "@/utils/week";
 
 const DAY_LABELS: Record<Day, string> = {
@@ -26,8 +25,9 @@ const isTrainingDay = (day: string): day is Day =>
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { logout, profile, session, updateProfile } = useAuth();
+  const { logout, profile, session } = useAuth();
   const { bookedCount, trainings } = useTrainings();
+  const isAdmin = profile?.role === "admin";
   const weekDates = getCurrentWeekDates();
   const max = profile?.max_sessions_per_week ?? 0;
   const progress = max > 0 ? Math.min(100, (bookedCount / max) * 100) : 0;
@@ -55,14 +55,6 @@ export default function ProfileScreen() {
 
       return dayDifference || a.time.localeCompare(b.time);
     });
-
-  const changeLimit = (delta: number) => {
-    const newValue = clampWeeklyLimit(max, delta, bookedCount);
-
-    if (newValue !== max) {
-      void updateProfile({ max_sessions_per_week: newValue });
-    }
-  };
 
   return (
     <SafeAreaView edges={["top", "bottom"]} style={styles.screen}>
@@ -92,118 +84,81 @@ export default function ProfileScreen() {
               <Text style={styles.initials}>{initials || "P"}</Text>
             </View>
           </View>
-          <Text style={styles.name}>{fullName || "Perun član"}</Text>
-          {/* Inferred placeholder: Profile has no created_at field. */}
+          <Text style={styles.name}>
+            {fullName || (isAdmin ? "Perun admin" : "Perun član")}
+          </Text>
           <View style={styles.membershipChip}>
-            <Text style={styles.membershipText}>ČLAN OD MAR 2024.</Text>
-          </View>
-        </View>
-
-        {/* Phase A examples, intentionally marked and dimmed until live stats land. */}
-        <View style={styles.statsRow}>
-          <View style={styles.statTile}>
-            <Text style={styles.placeholderMarker}>PRIMER</Text>
-            <Text style={[styles.statFigure, styles.burgundyStat]}>48</Text>
-            <Text style={styles.statLabel}>treninga ukupno</Text>
-          </View>
-          <View style={styles.statTile}>
-            <Text style={styles.placeholderMarker}>PRIMER</Text>
-            <Text style={[styles.statFigure, styles.sageStat]}>5</Text>
-            <Text style={styles.statLabel}>nedelja u nizu</Text>
-          </View>
-        </View>
-
-        <View style={styles.limitCard}>
-          <View style={styles.limitHeader}>
-            <View style={styles.limitHeaderCopy}>
-              <Text style={styles.limitTitle}>Nedeljni limit</Text>
-              <Text style={styles.limitSubtitle}>
-                Maksimalno treninga po nedelji
-              </Text>
-            </View>
-            <View style={styles.stepper}>
-              <Pressable
-                accessibilityLabel="Smanji nedeljni limit"
-                accessibilityRole="button"
-                disabled={max <= bookedCount}
-                onPress={() => changeLimit(-1)}
-                style={({ pressed }) => pressed && styles.pressed}
-              >
-                <Text
-                  style={[
-                    styles.stepperButton,
-                    max <= bookedCount && styles.disabledStepperButton,
-                  ]}
-                >
-                  −
-                </Text>
-              </Pressable>
-              <Text style={styles.stepperValue}>{max}</Text>
-              <Pressable
-                accessibilityLabel="Povećaj nedeljni limit"
-                accessibilityRole="button"
-                disabled={max >= 7}
-                onPress={() => changeLimit(1)}
-                style={({ pressed }) => pressed && styles.pressed}
-              >
-                <Text
-                  style={[
-                    styles.stepperButton,
-                    max >= 7 && styles.disabledStepperButton,
-                  ]}
-                >
-                  +
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-
-          <View style={styles.usageRow}>
-            <Text style={styles.usageLabel}>ISKORIŠĆENO OVE NEDELJE</Text>
-            <Text style={styles.usageValue}>
-              {bookedCount} / {max}
+            <Text style={styles.membershipText}>
+              {isAdmin ? "ADMIN" : "ČLAN OD MAR 2024."}
             </Text>
           </View>
-          <View style={styles.track}>
-            <View style={[styles.fill, { width: `${progress}%` }]}>
-              <View style={styles.fillHighlight} />
-            </View>
-          </View>
         </View>
 
-        <Text style={styles.sessionsSectionTitle}>
-          MOJI TERMINI OVE NEDELJE
-        </Text>
-        <View style={styles.sessionsList}>
-          {bookedSessions.map((training) => {
-            const day = training.day_of_week as Day;
-            const dateNumber = String(weekDates[day].getUTCDate()).padStart(
-              2,
-              "0",
-            );
+        {!isAdmin && (
+          <>
+            {/* Phase A examples, intentionally marked and dimmed until live stats land. */}
+            <View style={styles.statsRow}>
+              <View style={styles.statTile}>
+                <Text style={styles.placeholderMarker}>PRIMER</Text>
+                <Text style={[styles.statFigure, styles.burgundyStat]}>48</Text>
+                <Text style={styles.statLabel}>treninga ukupno</Text>
+              </View>
+              <View style={styles.statTile}>
+                <Text style={styles.placeholderMarker}>PRIMER</Text>
+                <Text style={[styles.statFigure, styles.sageStat]}>5</Text>
+                <Text style={styles.statLabel}>nedelja u nizu</Text>
+              </View>
+            </View>
 
-            return (
-              <View key={training.id} style={styles.sessionCard}>
-                <View style={styles.dateBlock}>
-                  <Text style={styles.dayLabel}>{DAY_LABELS[day]}</Text>
-                  <Text style={styles.dateNumber}>{dateNumber}</Text>
-                </View>
-                <View style={styles.sessionDivider} />
-                <View style={styles.sessionCopy}>
-                  <Text numberOfLines={1} style={styles.sessionTitle}>
-                    {training.title}
-                  </Text>
-                  <Text style={styles.sessionMeta}>
-                    {training.time.slice(0, 5)} · SALA A
-                  </Text>
-                </View>
-                <View style={styles.checkBadge}>
-                  <Text style={styles.check}>✓</Text>
+            <View style={styles.limitCard}>
+              <View style={styles.limitHeader}>
+                <Text style={styles.limitTitle}>Nedeljni limit</Text>
+                <Text style={styles.usageValue}>
+                  {bookedCount} / {max} ove nedelje
+                </Text>
+              </View>
+              <View style={styles.track}>
+                <View style={[styles.fill, { width: `${progress}%` }]}>
+                  <View style={styles.fillHighlight} />
                 </View>
               </View>
-            );
-          })}
-        </View>
+            </View>
+
+            <Text style={styles.sessionsSectionTitle}>
+              MOJI TERMINI OVE NEDELJE
+            </Text>
+            <View style={styles.sessionsList}>
+              {bookedSessions.map((training) => {
+                const day = training.day_of_week as Day;
+                const dateNumber = String(weekDates[day].getUTCDate()).padStart(
+                  2,
+                  "0",
+                );
+
+                return (
+                  <View key={training.id} style={styles.sessionCard}>
+                    <View style={styles.dateBlock}>
+                      <Text style={styles.dayLabel}>{DAY_LABELS[day]}</Text>
+                      <Text style={styles.dateNumber}>{dateNumber}</Text>
+                    </View>
+                    <View style={styles.sessionDivider} />
+                    <View style={styles.sessionCopy}>
+                      <Text numberOfLines={1} style={styles.sessionTitle}>
+                        {training.title}
+                      </Text>
+                      <Text style={styles.sessionMeta}>
+                        {training.time.slice(0, 5)} · SALA A
+                      </Text>
+                    </View>
+                    <View style={styles.checkBadge}>
+                      <Text style={styles.check}>✓</Text>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </>
+        )}
 
         <View style={styles.logoutContainer}>
           <Pressable
@@ -375,60 +330,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  limitHeaderCopy: {
-    flex: 1,
-    paddingRight: 10,
-  },
   limitTitle: {
     color: Colors.ink,
     fontFamily: FontFamilies.hanken[700],
     fontSize: 14.5,
     fontWeight: "700",
-  },
-  limitSubtitle: {
-    color: Colors.inkMuted,
-    fontFamily: FontFamilies.hanken[600],
-    fontSize: 12,
-    fontWeight: "600",
-    marginTop: 2,
-  },
-  stepper: {
-    alignItems: "center",
-    backgroundColor: Colors.surfaceMuted,
-    borderColor: "#EFE3D2",
-    borderRadius: Radii.tile[14],
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-  },
-  stepperButton: {
-    color: Colors.burgundy,
-    fontFamily: FontFamilies.hanken[700],
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  disabledStepperButton: {
-    opacity: 0.3,
-  },
-  stepperValue: {
-    color: Colors.ink,
-    fontFamily: FontFamilies.bricolage[800],
-    fontSize: 18,
-    fontWeight: "800",
-    minWidth: 14,
-    textAlign: "center",
-  },
-  usageRow: {
-    alignItems: "baseline",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 16,
-  },
-  usageLabel: {
-    ...Typography.microLabelWide,
-    color: Colors.inkFaint,
   },
   usageValue: {
     color: Colors.inkMuted,

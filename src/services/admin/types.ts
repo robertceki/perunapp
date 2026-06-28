@@ -37,4 +37,5 @@ export interface UpdateUserPatch {
   last_name?: string | null;
   role?: "user" | "admin" | null;
   max_sessions_per_week?: number | null;
+  enabled?: boolean | null;
 }

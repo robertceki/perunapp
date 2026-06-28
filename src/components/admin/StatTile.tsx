@@ -11,18 +11,27 @@ interface StatTileProps {
   deltaColor?: string;
 }
 
-export default function StatTile({ figure, label, figureColor = Colors.ink, delta, deltaColor }: StatTileProps) {
+export default function StatTile({
+  figure,
+  label,
+  figureColor = Colors.ink,
+  delta,
+  deltaColor,
+}: StatTileProps) {
   return (
     <View style={styles.tile}>
       <Text style={[styles.figure, { color: figureColor }]}>{figure}</Text>
       <Text style={styles.label}>{label}</Text>
-      {delta && <Text style={[styles.delta, { color: deltaColor }]}>{delta}</Text>}
+      {delta && (
+        <Text style={[styles.delta, { color: deltaColor }]}>{delta}</Text>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   tile: {
+    flex: 1,
     backgroundColor: Colors.surface,
     borderColor: Colors.border,
     borderWidth: 1,
@@ -31,7 +40,20 @@ const styles = StyleSheet.create({
     gap: 4,
     ...Shadows.card,
   },
-  figure: { fontFamily: FontFamilies.bricolage[800], fontSize: 26, fontWeight: "800" },
-  label: { fontFamily: FontFamilies.hanken[600], fontSize: 11.5, fontWeight: "600", color: Colors.inkMuted },
-  delta: { fontFamily: FontFamilies.hanken[700], fontSize: 11, fontWeight: "700" },
+  figure: {
+    fontFamily: FontFamilies.bricolage[800],
+    fontSize: 26,
+    fontWeight: "800",
+  },
+  label: {
+    fontFamily: FontFamilies.hanken[600],
+    fontSize: 11.5,
+    fontWeight: "600",
+    color: Colors.inkMuted,
+  },
+  delta: {
+    fontFamily: FontFamilies.hanken[700],
+    fontSize: 11,
+    fontWeight: "700",
+  },
 });

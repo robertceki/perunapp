@@ -11,6 +11,7 @@ const bookingErrorMessages: Record<string, string> = {
   session_closed: "Termin je trenutno zatvoren za prijave.",
   already_joined: "Već ste prijavljeni na ovaj termin.",
   not_authenticated: "Niste prijavljeni.",
+  account_inactive: "Vaš nalog je deaktiviran. Obratite se administratoru.",
   session_not_found: "Termin nije pronađen.",
 };
 

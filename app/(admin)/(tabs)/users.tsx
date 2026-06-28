@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 
-import { FilterChips, UserRow } from "@/components/admin";
+import { FilterChips, Toggle, UserRow } from "@/components/admin";
 import { Colors } from "@/constants/Colors";
 import { Radii, Shadows, Spacing } from "@/constants/spacing";
 import { FontFamilies, Typography } from "@/constants/typography";
@@ -44,6 +44,7 @@ export default function KorisniciScreen() {
   const [lastName, setLastName] = useState("");
   const [role, setRole] = useState<UserRole>("user");
   const [maxSessions, setMaxSessions] = useState(0);
+  const [enabled, setEnabled] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const fetchUsers = useCallback(async () => {
@@ -85,6 +86,7 @@ export default function KorisniciScreen() {
     setLastName(user.last_name ?? "");
     setRole(user.role);
     setMaxSessions(user.max_sessions_per_week);
+    setEnabled(user.enabled ?? true);
   };
 
   const closeEditModal = () => {
@@ -99,6 +101,7 @@ export default function KorisniciScreen() {
       last_name: lastName.trim(),
       role,
       max_sessions_per_week: maxSessions,
+      enabled,
     };
 
     setSaving(true);
@@ -271,6 +274,15 @@ export default function KorisniciScreen() {
               </View>
             </View>
 
+            <View style={styles.toggleRow}>
+              <Text style={styles.fieldLabel}>AKTIVAN</Text>
+              <Toggle
+                value={enabled}
+                onValueChange={setEnabled}
+                disabled={saving}
+              />
+            </View>
+
             <View style={styles.modalFooter}>
               <Pressable
                 onPress={closeEditModal}
@@ -421,6 +433,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     color: Colors.ink,
+  },
+  toggleRow: {
+    alignItems: "center",
+    borderColor: Colors.fieldBorder,
+    borderRadius: Radii.tile[14],
+    borderWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: Spacing.cardPadding,
   },
   modalFooter: {
     flexDirection: "row",

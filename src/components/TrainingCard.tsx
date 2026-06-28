@@ -19,7 +19,9 @@ export function TrainingCard({ training }: { training: Training }) {
 
   const userId = session?.user.id;
   const participants = training.session_participants ?? [];
-  const isBooked = participants.some((participant) => participant.user_id === userId);
+  const isBooked = participants.some(
+    (participant) => participant.user_id === userId,
+  );
   const bookedCount = participants.length;
   const isFull = bookedCount >= training.max_participants;
   const canJoin = !isFull && !reachedLimit && !isBooked;
@@ -69,9 +71,6 @@ export function TrainingCard({ training }: { training: Training }) {
             <Text style={[styles.time, fullAndNotBooked && styles.fullTime]}>
               {training.time.slice(0, 5)}
             </Text>
-            <Text style={[styles.duration, fullAndNotBooked && styles.fullMeta]}>
-              60 min
-            </Text>
           </View>
 
           <View
@@ -89,8 +88,10 @@ export function TrainingCard({ training }: { training: Training }) {
             >
               {training.title}
             </Text>
-            <Text style={[styles.category, fullAndNotBooked && styles.fullTime]}>
-              Grupni · Sala A
+            <Text
+              style={[styles.category, fullAndNotBooked && styles.fullTime]}
+            >
+              Grupni
             </Text>
           </View>
 
@@ -144,7 +145,8 @@ export function TrainingCard({ training }: { training: Training }) {
                     key={participant.user_id}
                     style={[
                       styles.participantAvatar,
-                      shownCount > visibleOthers.length - index && styles.overlap,
+                      shownCount > visibleOthers.length - index &&
+                        styles.overlap,
                       {
                         backgroundColor: palette.backgroundColor,
                         borderColor: cardBackground,
@@ -173,7 +175,10 @@ export function TrainingCard({ training }: { training: Training }) {
             </View>
 
             <Text
-              style={[styles.capacityText, fullAndNotBooked && styles.fullCapacityText]}
+              style={[
+                styles.capacityText,
+                fullAndNotBooked && styles.fullCapacityText,
+              ]}
             >
               {bookedCount} / {training.max_participants} mesta
             </Text>
@@ -197,7 +202,9 @@ export function TrainingCard({ training }: { training: Training }) {
             </View>
           ) : reachedLimit ? (
             <View style={[styles.action, styles.limitAction]}>
-              <Text style={styles.limitActionText}>Nedeljni limit dostignut</Text>
+              <Text style={styles.limitActionText}>
+                Nedeljni limit dostignut
+              </Text>
             </View>
           ) : (
             <Pressable
@@ -271,13 +278,6 @@ const styles = StyleSheet.create({
     color: Colors.ink,
     lineHeight: 21,
   },
-  duration: {
-    color: Colors.inkFaint,
-    fontFamily: FontFamilies.hanken[600],
-    fontSize: 10.5,
-    fontWeight: "600",
-    marginTop: 4,
-  },
   divider: {
     alignSelf: "stretch",
     backgroundColor: Colors.border,
@@ -304,9 +304,6 @@ const styles = StyleSheet.create({
   },
   fullTime: {
     color: "#9A9098",
-  },
-  fullMeta: {
-    color: "#ADA3AC",
   },
   fullTitle: {
     color: "#6E6670",
