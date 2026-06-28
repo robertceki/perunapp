@@ -10,14 +10,14 @@ export default function FilterChips<Key extends string>({
   onChange,
 }: FilterChipsProps<Key>) {
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-nowrap gap-2">
       {options.map((option) => {
         const active = option.key === value;
 
         return (
           <button
             aria-pressed={active}
-            className={`rounded-chip border px-3 py-1.5 text-xs font-bold ${
+            className={`shrink-0 rounded-chip border px-3 py-1.5 text-xs font-bold ${
               active
                 ? "border-burgundy bg-burgundy text-surface"
                 : "border-field-border bg-surface text-ink"

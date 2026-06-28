@@ -19,10 +19,15 @@ const DAY_LABELS: Record<Day, string> = {
 };
 
 export default function Profile() {
-  const { logout, profile, session } = useAuth();
+  const { changePassword, logout, profile, session } = useAuth();
   const { bookedCount, trainings } = useTrainings();
   const { showToast } = useToast();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const max = profile?.max_sessions_per_week ?? 0;
   const progress = max > 0 ? Math.min(100, (bookedCount / max) * 100) : 0;
   const weekDates = getCurrentWeekDates();
@@ -65,6 +70,103 @@ export default function Profile() {
     }
   }
 
+  async function handleChangePassword() {
+    if (newPassword.length < 6) {
+      showToast("Šifra mora imati najmanje 6 znakova.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      showToast("Šifre se ne podudaraju.");
+      return;
+    }
+
+    setChangingPassword(true);
+
+    try {
+      await changePassword(newPassword);
+      showToast("Šifra je uspešno promenjena.");
+      setNewPassword("");
+      setConfirmPassword("");
+      setPasswordVisible(false);
+      setShowChangePassword(false);
+    } catch {
+      showToast("Promena šifre nije uspela. Pokušajte ponovo.");
+    } finally {
+      setChangingPassword(false);
+    }
+  }
+
+  const changePasswordSection = (
+    <section className="mx-4 mt-7 rounded-card border border-border bg-surface p-4 shadow-sm">
+      <button
+        aria-expanded={showChangePassword}
+        className="flex w-full items-center justify-between text-left text-sm font-bold text-ink"
+        disabled={changingPassword}
+        onClick={() => setShowChangePassword((current) => !current)}
+        type="button"
+      >
+        Promeni šifru
+        <span className="text-lg leading-none text-burgundy">
+          {showChangePassword ? "−" : "+"}
+        </span>
+      </button>
+
+      {showChangePassword ? (
+        <div className="mt-4 flex flex-col gap-3">
+          <label className="flex flex-col gap-1.5 text-[11px] font-extrabold tracking-[0.08em] text-ink-faint">
+            NOVA ŠIFRA
+            <span className="flex rounded-input border border-field-border bg-surface focus-within:border-gold focus-within:ring-[3px] focus-within:ring-gold/15">
+              <input
+                autoComplete="new-password"
+                className="min-w-0 flex-1 bg-transparent px-3 py-3 text-base font-semibold tracking-normal text-ink outline-none"
+                onChange={(event) => setNewPassword(event.target.value)}
+                type={passwordVisible ? "text" : "password"}
+                value={newPassword}
+              />
+              <button
+                className="px-3 text-[13px] font-bold tracking-normal text-sage"
+                onClick={() => setPasswordVisible((current) => !current)}
+                type="button"
+              >
+                {passwordVisible ? "Sakrij" : "Prikaži"}
+              </button>
+            </span>
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-[11px] font-extrabold tracking-[0.08em] text-ink-faint">
+            POTVRDI ŠIFRU
+            <span className="flex rounded-input border border-field-border bg-surface focus-within:border-gold focus-within:ring-[3px] focus-within:ring-gold/15">
+              <input
+                autoComplete="new-password"
+                className="min-w-0 flex-1 bg-transparent px-3 py-3 text-base font-semibold tracking-normal text-ink outline-none"
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                type={passwordVisible ? "text" : "password"}
+                value={confirmPassword}
+              />
+              <button
+                className="px-3 text-[13px] font-bold tracking-normal text-sage"
+                onClick={() => setPasswordVisible((current) => !current)}
+                type="button"
+              >
+                {passwordVisible ? "Sakrij" : "Prikaži"}
+              </button>
+            </span>
+          </label>
+
+          <button
+            className="mt-1 w-full rounded-input bg-burgundy py-3 text-sm font-bold text-surface disabled:opacity-50"
+            disabled={changingPassword}
+            onClick={() => void handleChangePassword()}
+            type="button"
+          >
+            {changingPassword ? "Čuvanje..." : "Sačuvaj šifru"}
+          </button>
+        </div>
+      ) : null}
+    </section>
+  );
+
   // Admin profile: identity + logout only — no member booking/limit sections.
   if (isAdmin) {
     return (
@@ -103,7 +205,9 @@ export default function Profile() {
           ) : null}
         </section>
 
-        <div className="px-4 pt-7">
+        {changePasswordSection}
+
+        <div className="px-4 pt-3">
           <button
             className="w-full rounded-input border border-burgundy bg-transparent py-3.5 text-sm font-bold text-burgundy active:opacity-85 disabled:opacity-50"
             disabled={loggingOut}
@@ -230,7 +334,9 @@ export default function Profile() {
         </div>
       </section>
 
-      <div className="px-4 pt-[18px]">
+      {changePasswordSection}
+
+      <div className="px-4 pt-3">
         <button
           className="w-full rounded-input border border-burgundy bg-transparent py-3.5 text-sm font-bold text-burgundy active:opacity-85 disabled:opacity-50"
           disabled={loggingOut}

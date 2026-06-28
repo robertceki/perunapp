@@ -15,25 +15,17 @@ export function getCurrentWeekDates(referenceDate: Date = new Date()) {
   const currentDate = new Date(
     Date.UTC(getPart("year"), getPart("month") - 1, getPart("day")),
   );
-  const isoDay = currentDate.getUTCDay() || 7;
-  const monday = new Date(currentDate);
-  monday.setUTCDate(currentDate.getUTCDate() - isoDay + 1);
+  const dayOfWeek = currentDate.getUTCDay();
+  const sunday = new Date(currentDate);
+  sunday.setUTCDate(currentDate.getUTCDate() - dayOfWeek);
 
   return TRAINING_DAYS.reduce(
     (week, day, index) => {
-      const date = new Date(monday);
-      date.setUTCDate(monday.getUTCDate() + index);
+      const date = new Date(sunday);
+      date.setUTCDate(sunday.getUTCDate() + index + 1);
       week[day] = date;
       return week;
     },
-    {
-      sunday: new Date(
-        Date.UTC(
-          monday.getUTCFullYear(),
-          monday.getUTCMonth(),
-          monday.getUTCDate() + 6,
-        ),
-      ),
-    } as TrainingWeekDates,
+    { sunday: new Date(sunday) } as TrainingWeekDates,
   );
 }

@@ -23,6 +23,7 @@ export type AuthContextValue = {
     firstName: string,
     lastName: string,
   ) => Promise<void>;
+  changePassword: (newPassword: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateProfile: (patch: Partial<Profile>) => Promise<void>;
 };
@@ -124,6 +125,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   }, []);
 
+  const changePassword = useCallback(async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+    if (error) throw error;
+  }, []);
+
   const updateProfile = useCallback(
     async (patch: Partial<Profile>) => {
       if (!session) {
@@ -150,6 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       register,
+      changePassword,
       resetPassword,
       updateProfile,
     }),
@@ -160,6 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       register,
+      changePassword,
       resetPassword,
       updateProfile,
     ],

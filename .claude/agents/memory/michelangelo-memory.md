@@ -1,8 +1,8 @@
 # Michelangelo — Memory
 
 ## Session counter
-Current session: 17
-Last log: /Users/uros/Documents/Private/Projects/PerunApp/.tmnt/runs/P4b-mikey.md
+Current session: 18
+Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/session-logs/2026-06-28-S18-michelangelo.md
 
 ## Completed tasks
 - T5 (A1) — Fixed tab routing by deleting six dead day-route files (monday–saturday). Kept _layout.tsx as the single-screen renderer. Modified index.tsx to return null (no redirect, prevents dangling link).
@@ -25,6 +25,12 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.tmnt/runs/P4b-mikey.m
   - App.tsx: route updated from /admin/training/new to /admin/training/:id (supports both create + edit)
   - All screens: role-guarded, Tailwind v4 tokens, no new deps, strict TS
   - DoD: npm run build PASS (tsc -b + vite 206ms), npm run lint PASS (oxlint clean)
+- QA-Batch-1 Web (S18) — Four web app bug fixes (no timeout, clean execution). Codex fixed all in one pass:
+  - BUG #1: src/lib/week.ts — converted week logic from Monday-start to Sunday-start (Sunday = most recent Sun on/before today; resets 00:00 Europe/Belgrade). Callers (DayFilter, Profile, Treninzi) auto-update.
+  - BUG #2: src/contexts/AuthContext.tsx + src/screens/Profile.tsx — added changePassword method to AuthContext + type signature; implemented change-password UI on Profile (both admin + member branches) with validation (min 6 chars, must match), toggle show/hide, success/error toasts.
+  - BUG #3: src/components/admin/Toggle.tsx — fixed Toggle component sizing: track w-[46px] h-[28px], knob h-[24px] w-[24px], added inline-flex + shrink-0 to prevent flex squashing in modals.
+  - BUG #4: src/screens/admin/Treninzi.tsx, src/screens/admin/TrainingForm.tsx, src/index.css — added .no-scrollbar utility; wrapped day selectors in scrollable containers (overflow-x-auto); made VREME+MAKS form row responsive (grid-cols-1 mobile → lg:grid-cols-2 desktop); added min-w-0 + shrink-0 for proper flex behavior.
+  - DoD: npm run build PASS (215ms), npm run lint PASS (oxlint clean). All 4 fixes verified: week rolls Sunday, change-password works both roles, toggle robust, form fits mobile viewport with scrollable day rows.
 
 ## Gotchas
 - npm cache permission issue (`/Users/uros/.npm/_cacache`) prevented `npx` direct invocation; worked around using `npm_config_cache=/tmp/perunapp-npm-cache`.
@@ -42,6 +48,7 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.tmnt/runs/P4b-mikey.m
 - P3 Web (S15): Codex executed successfully (83k tokens, ~5min runtime). All 13 files created/modified: TrainingContext, useTrainings, ToastContext, useToast, week.ts utility; Header, DayFilter, AlertBar, TrainingCard, EmptyDay components; MemberHome + Profile screens; updated App.tsx with provider nesting. Codex verified tsc + eslint in sandbox. Local verification: npm run build PASS (tsc -b + vite build 161ms), npm run lint PASS (oxlint clean). No issues.
 - P4a Web (S16): Codex executed successfully (93k tokens, ~5min runtime). All 13 files created: AdminLayout, AdminHeader, TabBar, StatTile, BarChart, Toggle, FilterChips components; Pregled, Statistika, Korisnici, Treninzi, TrainingForm screens. Updated App.tsx routing with RequireAuthenticated wrapper, AdminLayout with nested tabs, AppProviders for admin+member. Codex reported DONE. Local verification: npm run build PASS (vite 229ms), npm run lint PASS (oxlint clean). No issues.
 - P4b Web (S17): Codex timed out (exit 143) on first invocation with combined prompt (large file list + §6/§7/§8 design spec). No patches applied before timeout (unlike T5/C-A). Fell back to direct code writing per established pattern (sessions 12–14). Implemented 3 screens (Korisnici/Treninzi/TrainingForm) + routing update manually. Fixed React hooks rules violation (hooks must be called unconditionally before guard returns); moved guard logic to component body instead of early return. DoD verified locally: npm run build PASS (tsc -b + vite 206ms), npm run lint PASS (oxlint clean).
+- QA-Batch-1 Web (S18): Codex executed cleanly, NO timeout, all 4 bugs fixed in one pass (55,940 tokens). Surgical changes only: 7 files touched (week.ts, AuthContext.tsx, Profile.tsx, Toggle.tsx, Treninzi.tsx, TrainingForm.tsx, index.css). All existing patterns preserved. npm run build PASS (215ms), npm run lint PASS (oxlint clean).
 
 ## Design system reuse notes
 - All screens use existing Colors, Radii, Spacing, Shadows, Typography constants.
@@ -57,6 +64,36 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.tmnt/runs/P4b-mikey.m
 - P3 Web: All member components (Header, DayFilter, AlertBar, TrainingCard, EmptyDay, MemberHome, Profile) use Tailwind v4 brand tokens exclusively. Toast uses bg-ink (dark pill) with white text. TrainingCard avatar palettes use existing colors (sage-tint/gold-tint/burgundy-tint). DayFilter active pill uses rounded-chip (20px radius). Current week dates computed using Europe/Belgrade timezone (getCurrentWeekDates utility in lib/week.ts). No hardcoded hex values anywhere; all design tokens from index.css @theme.
 - P4a Web: AdminHeader uses safe-area top padding (env). TabBar: fixed bottom, height 70px, safe-area bottom inset. All admin components reuse StatTile/BarChart/Toggle/FilterChips patterns. Pregled + Statistika load real admin RPCs (memberSeries, occupancySummary, slotPopularity). No new Tailwind tokens; all from v4 brand theme (bg-linear-to-t gradient for bars, text-burgundy active, text-[#B3A9B2] inactive, etc.).
 - P4b Web: Korisnici/Treninzi/TrainingForm follow same Tailwind v4 token pattern. Search icon from lucide-react. Edit modal uses backdrop blur (bg-black/30) + z-50. UserRow tint rotation cycles sage/gold/burgundy by index mod 3. SessionRow styling: white card (radius 18), closed state = bg-surface-muted + muted text. Time input uses formatTimeInput helper (inline strips non-digits, auto-inserts ":" after 2 digits). All buttons use rounded-input + font-semibold. No hardcoded colors except inline hex for red delete button (#C0341B). All borders use field-border/border tokens.
+- QA-Batch-1 Web (S18): changePasswordSection in Profile.tsx reuses existing field patterns (label + flex-row with input + show/hide button, focus rings, rounded-input borders). .no-scrollbar utility added to index.css (Firefox + WebKit scrollbar hiding). Toggle component uses fixed-size knob + track, no new colors. Responsive form row uses grid-cols-1 mobile default, lg:grid-cols-2 on larger screens.
+
+## Sunday-start week logic (S18, BUG #1)
+- Old (Monday-start): computed Monday as reference, iterated Mon–Sat + Sunday offset
+- New (Sunday-start): getUTCDay() returns 0=Sun..6=Sat. If today is Sunday, weekStartSunday = today. Otherwise, weekStartSunday = today - dayOfWeek.
+- Example: if today is Wednesday (dow=3), weekStartSunday = today - 3 days (lands on Sunday)
+- Return Record: sunday at original reference, monday..saturday = sunday+1..+6
+- Effect: All callers (Profile.tsx bookedSessions sort, DayFilter, week display) automatically use correct Sunday-start dates
+- Booking week resets Sunday 00:00 Europe/Belgrade, not Monday
+
+## Change-password flow (S18, BUG #2)
+- AuthContext.tsx: added changePassword(newPassword) → supabase.auth.updateUser({ password })
+- Profile.tsx: state for showChangePassword, newPassword, confirmPassword, passwordVisible, changingPassword
+- handleChangePassword(): validates (min 6 chars, both fields match), calls changePassword, shows success toast, collapses form
+- On error: shows error toast "Promena šifre nije uspela. Pokušajte ponovo."
+- Form styled like login/register: label + password fields with show/hide toggle, rounded-input borders, Tailwind tokens
+- Rendered in both admin + member branches of Profile (above logout button)
+
+## Toggle robustness (S18, BUG #3)
+- Old: relative h-[27px] w-[46px], no shrink-0 → gets flex-squashed in modals
+- New: inline-flex h-[28px] w-[46px] shrink-0, knob h-[24px] w-[24px], translate-x-[18px] ON state
+- Result: Toggle always renders at fixed track size, cannot be compressed by flex parent
+
+## Responsive admin forms (S18, BUG #4)
+- .no-scrollbar utility: scrollbar-width: none (Firefox) + ::-webkit-scrollbar { display: none } (WebKit)
+- Day selector rows: wrapped in <div className="no-scrollbar overflow-x-auto"> with flex-nowrap (implicit via chips)
+- VREME + MAKS row: changed from grid-cols-2 (always 2 columns) to grid-cols-1 gap-4 lg:grid-cols-2 (mobile stacks, desktop 2-col)
+- Each field wrapped in min-w-0 div to allow flex shrinking + prevent overflow
+- Stepper buttons: added shrink-0 to prevent squashing below minimum width
+- Result: day chips scroll horizontally on mobile; form row stacks on mobile, side-by-side on desktop; no page-level overflow
 
 ## Routing logic in app/_layout.tsx (Phase C update)
 - Added "register" and "forgot-password" to publicAuthRoutes list
@@ -139,7 +176,7 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.tmnt/runs/P4b-mikey.m
 - P4b Web: TrainingForm uses style={{ paddingTop: "calc(env(safe-area-inset-top) + 12px)" }}. Korisnici/Treninzi use px-5 pt-5 pb-24 (no explicit safe-area top; admin flows don't require it; bottom pb avoids TabBar overlap).
 
 ## P4a Web files summary
-- web/src/App.tsx: 130 lines. Updated routing: RequireAuthenticated wraps /profile + admin routes. AppProviders (renamed from MemberProviders) applies ToastProvider + TrainingProvider to both member + admin. AdminLayout nested under RequireAdmin with index routes: /admin→Pregled, /admin/users→Korisnici, /admin/sessions→Treninzi, /admin/stats→Statistika. TrainingForm at /admin/training/new outside AdminLayout.
+- web/src/App.tsx: 130 lines. Updated routing: RequireAuthenticated wraps /profile + admin routes. AppProviders (renamed from MemberProviders) applies ToastProvider + TrainingProvider to both member + admin. AdminLayout nested under RequireAdmin with index routes: /admin→Pregled, /admin/users→Korisniki, /admin/sessions→Treninzi, /admin/stats→Statistika. TrainingForm at /admin/training/new outside AdminLayout.
 - web/src/components/admin/AdminHeader.tsx: 42 lines. Top bar: emblem 30×30 + "PERUN" (font-display, tracking-[0.12em], burgundy) + "ADMIN" badge (rounded-[6px], small, burgundy on burgundyTint). Avatar link (navy bg, initials) → /profile. Safe-area top padding via env().
 - web/src/components/admin/TabBar.tsx: 48 lines. Fixed bottom nav, height 70px. 4 NavLink tabs: Pregled (end=true), Korisnici, Treninzi, Statistika with lucide icons (LayoutGrid, Users, Calendar, BarChart2). Active = font-bold text-burgundy, inactive = font-semibold text-[#B3A9B2]. Safe-area bottom inset.
 - web/src/components/admin/StatTile.tsx: 27 lines. Props: figure, label, figureColor, delta, deltaColor. White card, h-full for equal-height grids. Figure (Bricolage 26/800), label (11.5/600 muted), optional delta (11/700 colored).
@@ -150,8 +187,8 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.tmnt/runs/P4b-mikey.m
 - web/src/screens/admin/Pregled.tsx: ~180 lines. Load on mount: memberSeries(6) + occupancySummary("6") + useTrainings. Role guard (profile?.role === "admin"). Render: greeting "Zdravo, Admin", 2×2 stat grid (members/popunjenost/weekly trainings/open today), trend card "ČLANOVI PO MESECU" with bar chart + green %, quick action "＋ Novi trening" → /admin/training/new.
 - web/src/screens/admin/Statistika.tsx: ~220 lines. Period FilterChips (12/6/all). Load on change: memberSeries + occupancySummary + slotPopularity in Promise.all(). Render: title, members chart (latest figure + % badge), secondary tiles (new/month, avg occupancy + top day), "POPULARNOST TERMINA" (top 8 slots with proportional bars). Role guard.
 - web/src/screens/admin/Korisnici.tsx: 213 lines. Load listUsers() on mount, role-guarded. Header + search + FilterChips (Svi/Aktivni/Admini). UserRow list (one expanded at a time, tint index rotates). Edit Modal (IME/PREZIME/ULOGA/MAKS.SESIJA/Aktivan toggle). Delete confirm. Error/loading/empty states. Toast on mutations.
-- web/src/screens/admin/Treninzi.tsx: 105 lines. Header "Treninzi" + day date + "＋ Novi" button. Day selector FilterChips PON–SUB. SessionRow list with bookedCount + toggle open/close + onClick navigate to form. Empty state. Loading spinner.
-- web/src/screens/admin/TrainingForm.tsx: 265 lines. Nav bar back + title (Novi/Izmena). Fields: NAZIV (text), DAN (chips), VREME (masked HH:MM), MAKS.UČESNIKA (stepper), Status toggle. Validation (title, time format 00–23:00–59, max>=1). Sticky footer (Otkaži/Sačuvaj). On edit: load from context; if not found & !isNew → error page.
+- web/src/screens/admin/Treninzi.tsx: 105 lines (updated S18: day selector now scrollable, overflow-x-auto no-scrollbar). Header "Treninzi" + day date + "＋ Novi" button. Day selector FilterChips PON–SUB (scrollable). SessionRow list with bookedCount + toggle open/close + onClick navigate to form. Empty state. Loading spinner.
+- web/src/screens/admin/TrainingForm.tsx: 265 lines (updated S18: day chips scrollable, VREME+MAKS row responsive). Nav bar back + title (Novi/Izmena). Fields: NAZIV (text), DAN (chips in scrollable container), VREME (masked HH:MM), MAKS.UČESNIKA (stepper, shrink-0 buttons). Validation (title, time format 00–23:00–59, max>=1). Sticky footer (Otkaži/Sačuvaj). On edit: load from context; if not found & !isNew → error page.
 
 ## P4b Web additions/updates
 - **UserRow.tsx** (already existed from P4a): 102 lines. Props: user, expanded, onToggleExpand, onEdit, onRemove, tintIndex. Avatar (initials, circular, rotating tints). Name/email (truncate) + right chip (Admin or "{limit}× / ned"). Expanded: bg-surface-warm + border-gold, buttons Izmeni (outline burgundy) + Ukloni (outline red #C0341B).
@@ -177,3 +214,9 @@ Last log: /Users/uros/Documents/Private/Projects/PerunApp/.tmnt/runs/P4b-mikey.m
 - React hooks rules compliance: useEffect + useMemo called before guard returns
 - No new dependencies; reused UserRow + SessionRow + FilterChips + useTrainings + admin services
 
+## QA-Batch-1 Web improvements (vs P4b)
+- BUG #1 (week): Sunday-start booking weeks (reset Sunday 00:00 Belgrade, not Monday). All week-dependent UI auto-updates.
+- BUG #2 (password): changePassword method in AuthContext; change-password UI in Profile (both roles), with validation + toasts.
+- BUG #3 (toggle): Toggle component fixed-size + shrink-0, robust against flex squashing in modals.
+- BUG #4 (responsive): scrollable day selector rows (overflow-x-auto no-scrollbar), responsive form layout (mobile stacks, desktop 2-col).
+- All fixes surgical (7 files), no new deps, no new Tailwind tokens, Tailwind v4 brand tokens only, TypeScript strict.

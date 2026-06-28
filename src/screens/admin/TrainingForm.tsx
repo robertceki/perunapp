@@ -184,7 +184,7 @@ export default function TrainingForm() {
         <label className="text-[11px] font-extrabold uppercase tracking-widest text-ink-faint">
           Dan
         </label>
-        <div className="mt-1.5">
+        <div className="no-scrollbar mt-1.5 overflow-x-auto">
           <FilterChips
             options={TRAINING_DAYS.map((d) => ({
               key: d,
@@ -197,9 +197,9 @@ export default function TrainingForm() {
       </div>
 
       {/* VREME & MAKS. UČESNIKA row */}
-      <div className="mt-5 grid grid-cols-2 gap-4">
+      <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* VREME */}
-        <div>
+        <div className="min-w-0">
           <label className="text-[11px] font-extrabold uppercase tracking-widest text-ink-faint">
             Vreme
           </label>
@@ -210,12 +210,12 @@ export default function TrainingForm() {
             onChange={(e) => setTime(formatTimeInput(e.target.value))}
             placeholder="HH:MM"
             maxLength={5}
-            className="mt-1.5 w-full rounded-input border border-field-border bg-surface py-2.5 px-3 text-center text-sm placeholder-ink-faint font-mono focus:outline-none focus:ring-2 focus:ring-gold/30"
+            className="mt-1.5 w-full min-w-0 rounded-input border border-field-border bg-surface py-2.5 px-3 text-center text-sm placeholder-ink-faint font-mono focus:outline-none focus:ring-2 focus:ring-gold/30"
           />
         </div>
 
         {/* MAKS. UČESNIKA */}
-        <div>
+        <div className="min-w-0">
           <label className="text-[11px] font-extrabold uppercase tracking-widest text-ink-faint">
             Maks. učesnika
           </label>
@@ -225,7 +225,7 @@ export default function TrainingForm() {
               onClick={() =>
                 setMaxParticipants(Math.max(1, maxParticipants - 1))
               }
-              className="h-[38px] w-[38px] rounded-input border border-field-border bg-surface font-bold text-ink hover:bg-surface-muted active:opacity-70"
+              className="h-[38px] w-[38px] shrink-0 rounded-input border border-field-border bg-surface font-bold text-ink hover:bg-surface-muted active:opacity-70"
             >
               −
             </button>
@@ -233,14 +233,14 @@ export default function TrainingForm() {
               type="text"
               value={maxParticipants}
               readOnly
-              className="h-[38px] flex-1 rounded-input border border-field-border bg-surface-muted text-center font-bold text-ink"
+              className="h-[38px] min-w-0 flex-1 rounded-input border border-field-border bg-surface-muted text-center font-bold text-ink"
             />
             <button
               type="button"
               onClick={() =>
                 setMaxParticipants(Math.min(50, maxParticipants + 1))
               }
-              className="h-[38px] w-[38px] rounded-input border border-field-border bg-surface font-bold text-ink hover:bg-surface-muted active:opacity-70"
+              className="h-[38px] w-[38px] shrink-0 rounded-input border border-field-border bg-surface font-bold text-ink hover:bg-surface-muted active:opacity-70"
             >
               +
             </button>

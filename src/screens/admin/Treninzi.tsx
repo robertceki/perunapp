@@ -78,7 +78,7 @@ export default function Treninzi() {
       </div>
 
       {/* Day selector */}
-      <div className="mt-4">
+      <div className="no-scrollbar mt-4 overflow-x-auto">
         <FilterChips
           options={TRAINING_DAYS.map((day) => ({
             key: day,

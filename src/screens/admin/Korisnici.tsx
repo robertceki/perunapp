@@ -3,6 +3,7 @@ import { Search, X } from "lucide-react";
 
 import UserRow from "@/components/admin/UserRow";
 import FilterChips from "@/components/admin/FilterChips";
+import Toggle from "@/components/admin/Toggle";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import {
@@ -376,24 +377,15 @@ export default function Korisnici() {
               <label className="text-[11px] font-extrabold uppercase tracking-widest text-ink-faint">
                 Aktivan
               </label>
-              <button
-                type="button"
-                onClick={() =>
+              <Toggle
+                onChange={(enabled) =>
                   setEditingUser({
                     ...editingUser,
-                    enabled: !editingUser.enabled,
+                    enabled,
                   })
                 }
-                className={`relative h-7 w-12 rounded-full transition-colors ${
-                  editingUser.enabled ? "bg-burgundy" : "bg-[#DDD3C7]"
-                }`}
-              >
-                <div
-                  className={`absolute h-6 w-6 rounded-full bg-white transition-transform ${
-                    editingUser.enabled ? "translate-x-0.5" : "translate-x-5"
-                  }`}
-                />
-              </button>
+                value={Boolean(editingUser.enabled)}
+              />
             </div>
 
             {/* Footer */}

@@ -12,7 +12,7 @@ export default function Toggle({
   return (
     <button
       aria-checked={value}
-      className={`relative h-[27px] w-[46px] rounded-chip transition-colors ${
+      className={`relative inline-flex h-[28px] w-[46px] shrink-0 rounded-chip transition-colors ${
         value ? "bg-burgundy" : "bg-[#DDD3C7]"
       } disabled:opacity-50`}
       disabled={disabled}
@@ -21,8 +21,8 @@ export default function Toggle({
       type="button"
     >
       <span
-        className={`absolute top-[3px] left-[3px] h-[21px] w-[21px] rounded-full bg-surface transition-transform ${
-          value ? "translate-x-[19px]" : "translate-x-0"
+        className={`absolute top-[2px] left-[2px] h-[24px] w-[24px] rounded-full bg-surface transition-transform ${
+          value ? "translate-x-[18px]" : "translate-x-0"
         }`}
       />
     </button>
