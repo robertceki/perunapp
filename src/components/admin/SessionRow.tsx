@@ -31,15 +31,13 @@ export default function SessionRow({
   // and a fired long-press suppresses the row's navigate click.
   const timerRef = useRef<number | null>(null);
   const firedRef = useRef(false);
-  const startRef = useRef<{ x: number; y: number } | null>(null);
-
+  const startRef = useRef<{ x: number; y: number } | null>(null);  
   function clearTimer() {
     if (timerRef.current !== null) {
       window.clearTimeout(timerRef.current);
       timerRef.current = null;
     }
-  }
-
+  }  
   function handlePointerDown(event: React.PointerEvent) {
     if (!onLongPress) return;
     firedRef.current = false;
@@ -128,8 +126,15 @@ export default function SessionRow({
         >
           {session.room ?? "Sala"} · {bookedCount}/{session.max_participants}
         </span>
-      </span>
-
+          <ul className="mt-1 list-disc pl-5 text-xs">
+            {session.session_participants?.map((participant) => (
+          <li key={participant.user_id}>
+            {participant.profiles?.first_name} {participant.profiles?.last_name}
+          </li>
+         ))}
+        </ul>
+      </span>          
+          
       <span className="flex shrink-0 items-center gap-2">
         {isFull && !closed && (
           <span className="rounded-chip bg-burgundy-tint px-2 py-1 text-[9px] font-extrabold text-burgundy-text2">
