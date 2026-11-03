@@ -6,12 +6,6 @@ import { useTrainings } from "@/hooks/useTrainings";
 import { getBookingErrorMessage } from "@/lib/bookingErrors";
 import type { Training } from "@/types/Training";
 
-const AVATAR_PALETTES = [
-  "bg-sage-tint text-sage",
-  "bg-gold-tint text-gold-deep",
-  "bg-burgundy-tint text-burgundy",
-] as const;
-
 type TrainingCardProps = {
   training: Training;
   onJoin: (sessionId: string) => Promise<void>;
@@ -49,26 +43,11 @@ export function TrainingCard({
   const canJoin = !isFull && !reachedLimit && !isBooked;
   const fullAndNotBooked = isFull && !isBooked;
   const spotsLeft = Math.max(training.max_participants - bookedCount, 0);
-  const otherParticipants = isBooked
-    ? participants.filter((participant) => participant.user_id !== userId)
-    : participants;
-  const visibleSlots = bookedCount > 3 ? 2 : 3;
-  const visibleOthers = otherParticipants.slice(
-    0,
-    Math.max(visibleSlots - (isBooked ? 1 : 0), 0),
-  );
-  const shownCount = visibleOthers.length + (isBooked ? 1 : 0);
-  const overflowCount = Math.max(bookedCount - shownCount, 0);
   const cardBackground = fullAndNotBooked
     ? "bg-surface-muted"
     : isBooked
       ? "bg-surface-warm"
       : "bg-surface";
-  const avatarBorder = isBooked
-    ? "border-surface-warm"
-    : fullAndNotBooked
-      ? "border-surface-muted"
-      : "border-surface";
 
   async function submit(action: (sessionId: string) => Promise<void>) {
     setSubmitting(true);
@@ -130,53 +109,34 @@ export function TrainingCard({
         )}
       </div>
 
-      <div className="mt-3.5 flex items-center justify-between gap-2">
-        <div className="flex min-w-0 items-center">
-          <div className="flex shrink-0 items-center">
-            {isBooked && (
-              <span
-                className={`flex h-[29px] w-[29px] items-center justify-center rounded-full border-2 bg-burgundy text-[10px] font-bold text-surface ${avatarBorder}`}
-              >
-                TI
-              </span>
-            )}
+      <ul className="mt-3.5 flex min-w-0 flex-wrap gap-1.5">
+        {participants.map((participant) => {
+          const fullName = [
+            participant.profiles?.first_name,
+            participant.profiles?.last_name,
+          ]
+            .map((name) => name?.trim())
+            .filter(Boolean)
+            .join(" ");
+          const isCurrentUser = participant.user_id === userId;
 
-            {visibleOthers.map((participant, index) => {
-              const initials = [
-                participant.profiles?.first_name,
-                participant.profiles?.last_name,
-              ]
-                .filter(Boolean)
-                .map((name) => name?.trim().charAt(0))
-                .join("")
-                .slice(0, 2)
-                .toUpperCase();
+          return (
+            <li
+              className={`min-w-0 max-w-full rounded-chip px-2.5 py-1 text-xs font-semibold [overflow-wrap:anywhere] ${isCurrentUser ? "bg-burgundy text-surface" : "bg-sage-tint text-sage"}`}
+              key={participant.user_id}
+            >
+              {fullName || "—"}
+            </li>
+          );
+        })}
+      </ul>
 
-              return (
-                <span
-                  className={`flex h-[29px] w-[29px] items-center justify-center rounded-full border-2 text-[10px] font-bold ${avatarBorder} ${AVATAR_PALETTES[index % AVATAR_PALETTES.length]} ${index > 0 || isBooked ? "-ml-2" : ""}`}
-                  key={participant.user_id}
-                >
-                  {initials || "—"}
-                </span>
-              );
-            })}
-
-            {overflowCount > 0 && (
-              <span
-                className={`-ml-2 flex h-[29px] w-[29px] items-center justify-center rounded-full border-2 bg-track text-[10px] font-bold text-gold-deep ${avatarBorder}`}
-              >
-                +{overflowCount}
-              </span>
-            )}
-          </div>
-
-          <span
-            className={`ml-2.5 truncate text-[12.5px] font-semibold ${fullAndNotBooked ? "text-ink-faint" : "text-ink-muted"}`}
-          >
-            {bookedCount} / {training.max_participants} mesta
-          </span>
-        </div>
+      <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2">
+        <span
+          className={`text-[12.5px] font-semibold ${fullAndNotBooked ? "text-ink-faint" : "text-ink-muted"}`}
+        >
+          {bookedCount} / {training.max_participants} mesta
+        </span>
 
         {isBooked && (
           <button
