@@ -1,0 +1,94 @@
+{
+  "createdAt": "2026-11-03T14:39:35.0330104Z",
+  "reviewer": "/root/recovery_raphael",
+  "role": "raphael",
+  "task": "P-R1",
+  "phase": "corrected-state-re-review",
+  "specRevision": "r1",
+  "result": "pass",
+  "cwd": "F:\\Projects\\perunapp\\.tmnt\\runs\\workflow-parent-a5Tuvf",
+  "correction": {
+    "workerId": "01a1a1d4-5c17-7750-aee0-aa61a4966a69",
+    "task": "P-D1",
+    "attempt": 2,
+    "reportPath": "P-D1-correction-independent-verification-recovery-45732819-f21d-4fc2-9647-52941795612e.json",
+    "requestId": "P-D1-correction-37bac6be6d094a2cb4367dba0b8264a9",
+    "retryUsed": 1
+  },
+  "originalFailure": {
+    "failures": [
+      "remainingSlots(3,5): actual -2, expected 0",
+      "slotLabel(3,5): actual -2 slobodnih, expected 0 slobodnih"
+    ],
+    "outputPath": "P-R1-initial-independent-qa-replacement.output.txt",
+    "failed": 2,
+    "passed": 6,
+    "exitCode": 1,
+    "reportPath": "P-R1-initial-independent-qa-replacement.json"
+  },
+  "hashesBefore": {
+    "slot-label.mjs": "fa1b32fd84613581e8a309fa81aec84b83b1dfbeca80d3edf5435a372349fbc9",
+    "workflow.test.mjs": "4ac9110cb37bd4df19cff40f709bbc34ac3a8b646a5bbd49e7c3020d66793b23",
+    "remaining-slots.mjs": "3760630efaa5f6daa48e5aaf5f517098addbe87ff7b71d529c022b7e5ee3f917"
+  },
+  "hashesAfter": {
+    "slot-label.mjs": "fa1b32fd84613581e8a309fa81aec84b83b1dfbeca80d3edf5435a372349fbc9",
+    "workflow.test.mjs": "4ac9110cb37bd4df19cff40f709bbc34ac3a8b646a5bbd49e7c3020d66793b23",
+    "remaining-slots.mjs": "3760630efaa5f6daa48e5aaf5f517098addbe87ff7b71d529c022b7e5ee3f917"
+  },
+  "checks": {
+    "existingRunner": "package.json: node --test workflow.test.mjs",
+    "matchesExpectedCorrectedState": true,
+    "originalFailingChecksAndRegressions": true,
+    "labelUnchanged": true,
+    "testsUnchanged": true,
+    "fullSuite": true,
+    "testReview": "node:test and node:assert/strict cover normal, zero, full and overbooked inputs for both functions",
+    "stableDuringVerification": true,
+    "sourceReview": "remainingSlots exports Math.max(0, capacity - booked); slotLabel imports and calls remainingSlots"
+  },
+  "verification": [
+    {
+      "output": "\n> test\n> node --test workflow.test.mjs\n\n✔ remainingSlots: normal availability (0.7116ms)\n✔ slotLabel: normal availability (0.1095ms)\n✔ remainingSlots: zero capacity and bookings (0.5972ms)\n✔ slotLabel: zero capacity and bookings (0.0702ms)\n✔ remainingSlots: exactly full capacity (0.0714ms)\n✔ slotLabel: exactly full capacity (0.0599ms)\n✔ remainingSlots: overbooking clamps to zero (0.0461ms)\n✔ slotLabel: overbooking clamps to zero (0.0444ms)\nℹ tests 8\nℹ suites 0\nℹ pass 8\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 64.1842",
+      "last30Lines": [
+        "",
+        "> test",
+        "> node --test workflow.test.mjs",
+        "",
+        "✔ remainingSlots: normal availability (0.7116ms)",
+        "✔ slotLabel: normal availability (0.1095ms)",
+        "✔ remainingSlots: zero capacity and bookings (0.5972ms)",
+        "✔ slotLabel: zero capacity and bookings (0.0702ms)",
+        "✔ remainingSlots: exactly full capacity (0.0714ms)",
+        "✔ slotLabel: exactly full capacity (0.0599ms)",
+        "✔ remainingSlots: overbooking clamps to zero (0.0461ms)",
+        "✔ slotLabel: overbooking clamps to zero (0.0444ms)",
+        "ℹ tests 8",
+        "ℹ suites 0",
+        "ℹ pass 8",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 64.1842"
+      ],
+      "command": "cmd.exe /d /c npm test",
+      "exitCode": 0,
+      "failed": 0,
+      "total": 8,
+      "cwd": "F:\\Projects\\perunapp\\.tmnt\\runs\\workflow-parent-a5Tuvf",
+      "passed": 8
+    },
+    {
+      "exitCode": 0,
+      "command": "node --input-type=module -e \"import assert from 'node:assert/strict'; import { remainingSlots } from './remaining-slots.mjs'; import { slotLabel } from './slot-label.mjs'; assert.equal(remainingSlots(3,5),0); assert.equal(slotLabel(3,5),'0 slobodnih'); assert.equal(remainingSlots(5,3),2); assert.equal(slotLabel(5,3),'2 slobodnih'); for(let c=0;c<=100;c++) for(let b=0;b<=100;b++) { const expected=Math.max(0,c-b); assert.equal(remainingSlots(c,b),expected); assert.equal(slotLabel(c,b),expected+' slobodnih'); } console.log('Original overbooking checks, normal checks and 10201 nonnegative integer cases for both functions passed');\"",
+      "output": "Original overbooking checks, normal checks and 10201 nonnegative integer cases for both functions passed",
+      "cwd": "F:\\Projects\\perunapp\\.tmnt\\runs\\workflow-parent-a5Tuvf"
+    }
+  ],
+  "scope": "Only qa-rereview.json written; no source/test edits, worker requests, adapter/codex launches, normal initialization, memory/session/board writes or correction retries.",
+  "remainingChecks": [
+    "Leonardo/Splinter synthesis and main desktop final suite/isolation verification remain pending; no final workflow completion claimed."
+  ],
+  "manualCriteria": "No additional manual behavior criterion in this bounded P-R1 re-review."
+}

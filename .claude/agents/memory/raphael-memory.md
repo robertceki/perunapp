@@ -2,7 +2,7 @@
 
 ## Session counter
 Current session: 2
-Last log: 2026-06-27-S2-raphael.md
+Last log: .claude/agents/tmnt/session-logs/2026-06-27-S2-raphael.md
 
 ## Completed tasks
 - T17 (D3) — Fix broken test + add real test runner

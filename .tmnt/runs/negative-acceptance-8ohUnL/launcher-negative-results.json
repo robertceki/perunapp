@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "scope": "Existing acceptance fixture launcher harness only; prose contract is not a new executable production dispatcher",
+  "originalParentLedgerUnchanged": true,
+  "originalLaunchCount": 4,
+  "results": [
+    {
+      "name": "duplicate completed request",
+      "exit": 1,
+      "rejectedBeforeLaunch": true,
+      "stderr": "AssertionError [ERR_ASSERTION]: Duplicate/uncertain request: do not relaunch\n    at F:\\Projects\\perunapp\\.tmnt\\runs\\workflow-parent-a5Tuvf\\parent-launch.cjs:2:1914\n    at Object.<anonymous> (F:\\Projects\\perunapp\\.tmnt\\runs\\workflow-parent-a5Tuvf\\parent-launch.cjs:2:3655)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)\n    at Object..js (node:internal/modules/cjs/loader:2002:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47\n"
+    },
+    {
+      "name": "forbidden output scope",
+      "exit": 1,
+      "rejectedBeforeLaunch": true,
+      "stderr": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'F:\\\\Projects\\\\perunapp\\\\src\\\\NEGATIVE_TEST_MUST_NOT_BE_CREATED.ts'\n-   'F:\\\\Projects\\\\perunapp\\\\.tmnt\\\\runs\\\\workflow-parent-a5Tuvf\\\\slot-label.mjs'\n  ]\n\n    at F:\\Projects\\perunapp\\.tmnt\\runs\\workflow-parent-a5Tuvf\\parent-launch.cjs:2:995\n    at Object.<anonymous> (F:\\Projects\\perunapp\\.tmnt\\runs\\workflow-parent-a5Tuvf\\parent-launch.cjs:2:3655)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)\n    at Object..js (node:internal/modules/cjs/loader:2002:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47\n"
+    },
+    {
+      "name": "uncertain prior launch state",
+      "exit": 1,
+      "rejectedBeforeLaunch": true,
+      "stderr": "AssertionError [ERR_ASSERTION]: Duplicate/uncertain request: do not relaunch\n    at F:\\Projects\\perunapp\\.tmnt\\runs\\negative-acceptance-8ohUnL\\uncertain-launch-fixture\\parent-launch.cjs:2:1914\n    at Object.<anonymous> (F:\\Projects\\perunapp\\.tmnt\\runs\\negative-acceptance-8ohUnL\\uncertain-launch-fixture\\parent-launch.cjs:2:3655)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)\n    at Object..js (node:internal/modules/cjs/loader:2002:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47\n"
+    }
+  ]
+}

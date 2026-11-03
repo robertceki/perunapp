@@ -2,7 +2,7 @@
 
 ## Session counter
 Current session: 18
-Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/session-logs/2026-06-28-S18-michelangelo.md
+Last log: .claude/agents/tmnt/session-logs/2026-06-28-S18-michelangelo.md
 
 ## Completed tasks
 - T5 (A1) — Fixed tab routing by deleting six dead day-route files (monday–saturday). Kept _layout.tsx as the single-screen renderer. Modified index.tsx to return null (no redirect, prevents dangling link).

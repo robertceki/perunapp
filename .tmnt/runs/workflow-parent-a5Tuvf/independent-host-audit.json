@@ -1,0 +1,338 @@
+{
+  "result": "pass",
+  "protectedFiles": 183,
+  "protectedChanges": 0,
+  "allFiveRoles": [
+    "donatello",
+    "leonardo",
+    "michelangelo",
+    "raphael",
+    "splinter"
+  ],
+  "children": [
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a1be-f567-7ad1-8611-59432b5f82ad",
+      "role": "raphael",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_raphael_failure",
+            "agent_nickname": "Archimedes",
+            "agent_role": "raphael"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a1bf-d70d-7eb2-965f-3def21838df8",
+      "role": "leonardo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_leonardo_correction",
+            "agent_nickname": "Galileo",
+            "agent_role": "leonardo"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a1c0-ab8c-78e1-9757-2979d05c9e2a",
+      "role": "donatello",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_donatello_correction",
+            "agent_nickname": "Raman",
+            "agent_role": "donatello"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a1ba-ff9a-7733-80c2-4cb2d6db1be2",
+      "role": "michelangelo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_michelangelo_resume",
+            "agent_nickname": "Kuhn",
+            "agent_role": "michelangelo"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a1bb-a7d7-7b02-bf8a-8445d750d5c9",
+      "role": "leonardo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_leonardo_r1",
+            "agent_nickname": "Kierkegaard",
+            "agent_role": "leonardo"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a1bc-6eca-7e32-84be-b7bf3437cd9a",
+      "role": "raphael",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_raphael",
+            "agent_nickname": "Goodall",
+            "agent_role": "raphael"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a11f-fa21-7ba3-b054-06a67e5bcc91",
+      "role": "leonardo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_leonardo_m1",
+            "agent_nickname": "Parfit",
+            "agent_role": "leonardo"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a120-b5a1-7620-82a7-afe14ebd4b54",
+      "role": "michelangelo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_michelangelo",
+            "agent_nickname": "Boole",
+            "agent_role": "michelangelo"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a11a-15cc-7b13-b4b9-662fe0369044",
+      "role": "splinter",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_splinter",
+            "agent_nickname": "Sartre",
+            "agent_role": "splinter"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a11a-e4c8-7cd0-8e9c-6576404e7814",
+      "role": "leonardo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_leonardo",
+            "agent_nickname": "Mendel",
+            "agent_role": "leonardo"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+      "childId": "01a1a11b-aee3-7b32-bc0a-599b0910fa15",
+      "role": "donatello",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a119-d118-72e0-8c2d-95fbb630cb0c",
+            "depth": 1,
+            "agent_path": "/root/fixture_donatello",
+            "agent_nickname": "Mencius",
+            "agent_role": "donatello"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a1d6-7994-75f1-9826-dd4e04907b48",
+      "childId": "01a1a1d6-ca1f-7f60-abad-f1ecce24c8ac",
+      "role": "donatello",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1d6-7994-75f1-9826-dd4e04907b48",
+            "depth": 1,
+            "agent_path": "/root/recovery_donatello",
+            "agent_nickname": "Dirac",
+            "agent_role": "donatello"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a1d6-7994-75f1-9826-dd4e04907b48",
+      "childId": "01a1a1d8-42ea-7c63-b15a-51e048d4f26c",
+      "role": "leonardo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1d6-7994-75f1-9826-dd4e04907b48",
+            "depth": 1,
+            "agent_path": "/root/recovery_leonardo_review",
+            "agent_nickname": "Planck",
+            "agent_role": "leonardo"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a1d6-7994-75f1-9826-dd4e04907b48",
+      "childId": "01a1a1d9-49c4-7c40-9c4c-b6a878b94426",
+      "role": "raphael",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1d6-7994-75f1-9826-dd4e04907b48",
+            "depth": 1,
+            "agent_path": "/root/recovery_raphael",
+            "agent_nickname": "Curie",
+            "agent_role": "raphael"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a1d6-7994-75f1-9826-dd4e04907b48",
+      "childId": "01a1a1da-2ae3-7231-82be-436e32d2221e",
+      "role": "leonardo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1d6-7994-75f1-9826-dd4e04907b48",
+            "depth": 1,
+            "agent_path": "/root/recovery_leonardo_final",
+            "agent_nickname": "Herschel",
+            "agent_role": "leonardo"
+          }
+        }
+      },
+      "completed": true
+    },
+    {
+      "parent": "01a1a1d6-7994-75f1-9826-dd4e04907b48",
+      "childId": "01a1a1db-2605-7520-8757-39a9fb19a17f",
+      "role": "splinter",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1d6-7994-75f1-9826-dd4e04907b48",
+            "depth": 1,
+            "agent_path": "/root/recovery_splinter",
+            "agent_nickname": "Tesla",
+            "agent_role": "splinter"
+          }
+        }
+      },
+      "completed": true
+    }
+  ],
+  "workers": [
+    {
+      "threadId": "01a1a11d-da02-7882-9755-4bf539244bba",
+      "role": "donatello",
+      "task": "P-D1",
+      "phase": "initial",
+      "cwd": "F:\\Projects\\perunapp",
+      "source": "exec"
+    },
+    {
+      "threadId": "01a1a127-3889-7771-b0a6-05e34acb135a",
+      "role": "michelangelo",
+      "task": "P-M1",
+      "phase": "initial",
+      "cwd": "F:\\Projects\\perunapp",
+      "source": "exec"
+    },
+    {
+      "threadId": "01a1a1bd-bb1e-7d81-89a6-8ff09192b420",
+      "role": "raphael",
+      "task": "P-R1",
+      "phase": "initial",
+      "cwd": "F:\\Projects\\perunapp",
+      "source": "exec"
+    },
+    {
+      "threadId": "01a1a1d4-5c17-7750-aee0-aa61a4966a69",
+      "role": "donatello",
+      "task": "P-D1",
+      "phase": "correction",
+      "cwd": "F:\\Projects\\perunapp",
+      "source": "exec"
+    }
+  ],
+  "parentLaunchCount": 4,
+  "correctionCount": 1,
+  "testFileUnchanged": true,
+  "seededFailure": {
+    "exit": 1,
+    "passed": 6,
+    "failed": 2
+  },
+  "correctedRereview": {
+    "exit": 0,
+    "passed": 8,
+    "failed": 0
+  },
+  "limits": [
+    "Controlled fixture only",
+    "VS Code parity and full application behavior remain unverified",
+    "Four approved contract edits before launch remain separately documented"
+  ]
+}

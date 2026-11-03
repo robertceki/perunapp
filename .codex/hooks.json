@@ -1,0 +1,19 @@
+{
+  "description": "Perun verifier gate: preserve the 60-minute marker and logged skip-verify contract.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/verify-gate.mjs\"",
+            "commandWindows": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/verify-gate.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Checking Perun verification evidence"
+          }
+        ]
+      }
+    ]
+  }
+}

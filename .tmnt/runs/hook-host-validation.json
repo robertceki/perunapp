@@ -1,0 +1,80 @@
+{
+  "hookDiscovery": {
+    "data": [
+      {
+        "cwd": "F:/Projects/perunapp",
+        "hooks": [
+          {
+            "key": "F:\\Projects\\perunapp\\.codex\\hooks.json:pre_tool_use:0:0",
+            "eventName": "preToolUse",
+            "handlerType": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/verify-gate.mjs\"",
+            "async": false,
+            "matcher": "^Bash$",
+            "timeoutSec": 10,
+            "statusMessage": "Checking Perun verification evidence",
+            "additionalContextLimit": null,
+            "sourcePath": "F:\\Projects\\perunapp\\.codex\\hooks.json",
+            "source": "project",
+            "pluginId": null,
+            "environmentId": null,
+            "displayOrder": 0,
+            "enabled": true,
+            "isManaged": false,
+            "currentHash": "sha256:4c1471a737b6cb01ef699cfeedd101a11030b2c7e6b28a13ee21c64f1a9aba5e",
+            "trustStatus": "trusted"
+          }
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ]
+  },
+  "raphael": {
+    "childId": "01a1a0ff-18fa-7353-8b75-b8f86b3cd356",
+    "agentRole": "raphael",
+    "source": {
+      "subAgent": {
+        "thread_spawn": {
+          "parent_thread_id": "01a1a0fe-f8ae-7fb0-a77f-461cc54d850f",
+          "depth": 1,
+          "agent_path": "/root/raphael",
+          "agent_nickname": "Planck",
+          "agent_role": "raphael"
+        }
+      }
+    },
+    "activities": [
+      {
+        "type": "subAgentActivity",
+        "model": "gpt-6.1-sol",
+        "reasoningEffort": "low",
+        "id": "call_49262e464f5045d1a39268aa9ddf94f2",
+        "kind": "started",
+        "agentThreadId": "01a1a0ff-18fa-7353-8b75-b8f86b3cd356",
+        "agentPath": "/root/raphael",
+        "startedAtMs": 1793702435259,
+        "completedAtMs": 1793702435259
+      },
+      {
+        "type": "subAgentActivity",
+        "model": null,
+        "reasoningEffort": null,
+        "id": "subagent-completed-01a1a0ff-19bb-7512-aa36-0c1025b1949c",
+        "kind": "completed",
+        "agentThreadId": "01a1a0ff-18fa-7353-8b75-b8f86b3cd356",
+        "agentPath": "/root/raphael",
+        "startedAtMs": 1793702444155,
+        "completedAtMs": 1793702444155
+      }
+    ]
+  },
+  "rootProbe": "01a1a0fe-536f-75c0-ac50-8dacb5730040",
+  "childParentProbe": "01a1a0fe-f8ae-7fb0-a77f-461cc54d850f",
+  "innerWorkerRun": ".tmnt/runs/hook-inner-probe-donatello-Ptmp6s",
+  "limits": [
+    "Fresh/stale/bypass cases verified with isolated fixtures; host canaries verified missing-marker denial only.",
+    "VS Code extension is not independently tested.",
+    "Legacy substring matching and fail-open behavior remain."
+  ]
+}

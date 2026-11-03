@@ -2,7 +2,7 @@
 
 ## Session counter
 Current session: 7
-Last log: /Users/uros/Documents/Private/Projects/PerunApp/.claude/agents/tmnt/session-logs/2026-06-28-S7-donatello.md
+Last log: .claude/agents/tmnt/session-logs/2026-06-28-S7-donatello.md
 
 ## Completed tasks
 - T7 (S2): Untrack .env, fix .gitignore, add .env.example — DONE

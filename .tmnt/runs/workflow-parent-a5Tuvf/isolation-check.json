@@ -1,0 +1,28 @@
+{
+  "createdAt": "2026-11-03T14:42:14.686Z",
+  "verifier": "/root",
+  "runtimeBaseline": "protected-baseline-before-launch.json",
+  "checked": 183,
+  "unchanged": 183,
+  "differences": [],
+  "result": "pass",
+  "historicalBaseline": "protected-baseline.json",
+  "historicalToRuntimeDifferenceCount": 4,
+  "approvedPrelaunchEvidence": "prelaunch-review-changes.json",
+  "approvedFourContractOnlyChangesMatch": true,
+  "oldFailedFixture": {
+    "path": ".tmnt/runs/workflow-e2e-2lxDTJ",
+    "boardSha256": "216561a1a2912807280632987155e5752e3c16debfa899129eca79176476c764",
+    "status": "failed / blocked: worker startup",
+    "attempts": 1,
+    "retryUsed": 0,
+    "ledgerVerified": true
+  },
+  "parentLedger": {
+    "count": 4,
+    "allReturned": true,
+    "distinctWorkerIds": 4,
+    "requestHashesAndCountsValid": true
+  },
+  "noRestorePerformed": true
+}

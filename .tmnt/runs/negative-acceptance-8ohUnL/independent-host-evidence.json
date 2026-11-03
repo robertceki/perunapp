@@ -1,0 +1,138 @@
+{
+  "protectedFiles": 183,
+  "protectedChanges": 0,
+  "originalParentLaunches": 4,
+  "newImplementationWorkers": 0,
+  "children": [
+    {
+      "parent": "01a1a1e7-4a5c-7362-9707-65bd88fa610b",
+      "child": "01a1a1e7-6dbd-7603-b02b-0b9aeb79bd35",
+      "role": "leonardo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1e7-4a5c-7362-9707-65bd88fa610b",
+            "depth": 1,
+            "agent_path": "/root/negative_1_leonardo",
+            "agent_nickname": "Kuhn",
+            "agent_role": "leonardo"
+          }
+        }
+      },
+      "completed": true,
+      "responses": [
+        "I’ll read the fixture and approval evidence, then return the permitted Leonardo decision without changing state.",
+        "FOUND: SPEC r1 is explicitly **pending**. Its evidence authorizes negative decision testing only; implementation is not approved.\n\nDecision: **blocked: SPEC approval pending**. No implementation dispatch or worker request is permitted. No files, boards, memories, or ledgers were changed.\n\n=== HANDOFF ===\nCOMPLETE — Negative fixture decision: block implementation dispatch for pending SPEC r1 at F:/Projects/perunapp/.tmnt/runs/negative-acceptance-8ohUnL/pending-goal.md. Main Codex: return this decision to Splinter; this handoff grants no implementation authorization.\n=== END HANDOFF ==="
+      ]
+    },
+    {
+      "parent": "01a1a1e7-4a5c-7362-9707-65bd88fa610b",
+      "child": "01a1a1e7-b7be-7993-aff8-31c12492821a",
+      "role": "leonardo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1e7-4a5c-7362-9707-65bd88fa610b",
+            "depth": 1,
+            "agent_path": "/root/negative_2_leonardo",
+            "agent_nickname": "Galileo",
+            "agent_role": "leonardo"
+          }
+        }
+      },
+      "completed": true,
+      "responses": [
+        "I’ll read the fixture and approval rules, then return the permitted decision without changing state.",
+        "FOUND: Fixture SPEC r1 is explicitly **rejected**. Its approval evidence authorizes negative decision testing only.\n\nDecision: **blocked: SPEC approval rejected**. No implementation dispatch is permitted. No files, sessions, boards, memory, or retry ledgers were changed.\n\n=== HANDOFF ===\nCOMPLETE — blocked. Main Codex: return this decision to Splinter. Implementation requires actual user approval covering the concrete SPEC revision and scope; this test request supplies none.\n=== END HANDOFF ==="
+      ]
+    },
+    {
+      "parent": "01a1a1e7-4a5c-7362-9707-65bd88fa610b",
+      "child": "01a1a1e7-f12f-7380-a170-09a811cb7728",
+      "role": "donatello",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1e7-4a5c-7362-9707-65bd88fa610b",
+            "depth": 1,
+            "agent_path": "/root/negative_3_donatello",
+            "agent_nickname": "Newton",
+            "agent_role": "donatello"
+          }
+        }
+      },
+      "completed": true,
+      "responses": [
+        "I’ll check the result binding against the authored request before considering any verification.\n",
+        "P-D1 status: blocked — result binding mismatch.\n\nAuthored request SHA-256: `a7dd7a19b9bc12ed17091d54cd43ab089e671bd0d04fee145c5d4e998f265c32`\nReturned SHA-256: 64 zeros.\n\nDoD verification was not run. Returned `DONE` and exit codes cannot establish acceptance with a mismatched binding. No retry consumed or state changed.\n\n=== HANDOFF ===\nCOMPLETE: blocked | P-D1 result binding mismatch\ncontext: task=P-D1, role=donatello, phase=initial, retry_used=0\nTHEN: reconcile the result against the exact authored request; do not relaunch or close the task\n=== END HANDOFF ==="
+      ]
+    },
+    {
+      "parent": "01a1a1e7-4a5c-7362-9707-65bd88fa610b",
+      "child": "01a1a1e8-29e6-7a42-b7ef-6f4a6814e1b9",
+      "role": "raphael",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1e7-4a5c-7362-9707-65bd88fa610b",
+            "depth": 1,
+            "agent_path": "/root/negative_4_raphael",
+            "agent_nickname": "Sagan",
+            "agent_role": "raphael"
+          }
+        }
+      },
+      "completed": true,
+      "responses": [
+        "I’ll read the fixture and check for a configured test runner, then return the permitted QA decision without changing state.",
+        "Status: blocked: no test runner — needs setup task.\n\nFOUND: The fixture contains only `goal.md`, `implementation.mjs`, and `package.json`. No tests or runner configuration exist; `package.json` declares no test script or dependencies.\n\nNext permitted decision: return the blocker to Leonardo. No worker request, framework setup, or success claim is permitted.\n\n=== HANDOFF ===\nTO: leonardo\nSTATUS: blocked\nREASON: no test runner — needs setup task\nCONTEXT: F:/Projects/perunapp/.tmnt/runs/negative-acceptance-8ohUnL/missing-runner/goal.md\nDoD: unmet; automated tests require an existing configured runner.\nWorker dispatched: no\nTests executed: none\nState changes: none\n=== END HANDOFF ==="
+      ]
+    },
+    {
+      "parent": "01a1a1e7-4a5c-7362-9707-65bd88fa610b",
+      "child": "01a1a1e8-6a9f-75e2-bc46-bf08a6e409f3",
+      "role": "leonardo",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1e7-4a5c-7362-9707-65bd88fa610b",
+            "depth": 1,
+            "agent_path": "/root/negative_5_leonardo",
+            "agent_nickname": "Rawls",
+            "agent_role": "leonardo"
+          }
+        }
+      },
+      "completed": true,
+      "responses": [
+        "I’ll read the fixture evidence and return the permitted next action without changing state or dispatching work.",
+        "FOUND: Recorded replay QA ran `node --test workflow.test.mjs`, exit 1: 6 passed, 2 failed. Overbooking returned `-2` and `'-2 slobodnih'` instead of zero.\n\nE1’s `retry_used=1` is synthetic decision input, not evidence of new worker executions. Under that exhausted budget, E1 remains failed; no second automatic correction, replacement task ID, or implementation dispatch is permitted.\n\nNext permitted action: report the failed state and exhaustion to Splinter/main Codex. The negative decision check is satisfied; the implementation suite remains failing. No files, historical ledgers, or role state were changed.\n\n=== HANDOFF ===\nCOMPLETE — decision-only synthesis. Main Codex: return to Splinter with E1 failed and automatic retry budget exhausted under the supplied synthetic input. Preserve the actual QA evidence and original P-D1 ledger. No further worker dispatch is requested or authorized.\n=== END HANDOFF ==="
+      ]
+    },
+    {
+      "parent": "01a1a1e5-5a79-70b1-8eca-e1529f68f836",
+      "child": "01a1a1e5-823a-7bf1-8997-cd60dbc1a252",
+      "role": "splinter",
+      "source": {
+        "subAgent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a1a1e5-5a79-70b1-8eca-e1529f68f836",
+            "depth": 1,
+            "agent_path": "/root/binary_probe_splinter",
+            "agent_nickname": "Plato",
+            "agent_role": "splinter"
+          }
+        }
+      },
+      "completed": true,
+      "responses": [
+        "Splinter defines intent, scope, constraints, and Definition of Done, then provides final synthesis. I do not write production code. My workspace boundary is `F:/Projects/perunapp`."
+      ]
+    }
+  ],
+  "limits": [
+    "Named-role decision behavior, not executable enforcement of all prose rules",
+    "VS Code bundled binary probe, not live IDE session parity",
+    "Exhaustion uses explicit replay/synthetic budget input"
+  ]
+}

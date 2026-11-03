@@ -1,0 +1,95 @@
+{
+  "reviewer": "/root/fixture_raphael_failure",
+  "replacementWrapper": true,
+  "originalWrapper": "/root/fixture_raphael",
+  "replacementReason": "Parent reports original wrapper unavailable; original authored pending request retained without alteration.",
+  "requestId": "P-R1-initial-9a2a264c6732487f9cc01556850aa183",
+  "requestSha256": "193da2830266485f29d0930169a857f098391e64601dba29de1d95c69c9c705e",
+  "role": "raphael",
+  "task": "P-R1",
+  "phase": "initial",
+  "retryUsed": 0,
+  "specRevision": "r1",
+  "binding": "matched exact bytes and pending/result identities",
+  "pendingLaunchStateNote": "Pending snapshot says not_launched; actual parent result and worker events establish executed; no relaunch.",
+  "worker": {
+    "adapterExit": 0,
+    "workerExit": 0,
+    "workerId": "01a1a1bd-bb1e-7d81-89a6-8ff09192b420",
+    "finalPath": "F:\\Projects\\perunapp\\.tmnt\\runs\\P-R1-raphael-O5PG48\\response.md",
+    "eventsPath": "F:\\Projects\\perunapp\\.tmnt\\runs\\P-R1-raphael-O5PG48\\events.jsonl",
+    "stderrPath": "F:\\Projects\\perunapp\\.tmnt\\runs\\P-R1-raphael-O5PG48\\stderr.log"
+  },
+  "command": "npm test",
+  "execution": "cmd.exe /d /s /c \"npm test\"",
+  "cwd": "F:\\Projects\\perunapp\\.tmnt\\runs\\workflow-parent-a5Tuvf",
+  "exitCode": 1,
+  "passed": 6,
+  "failed": 2,
+  "total": 8,
+  "outputPath": "F:\\Projects\\perunapp\\.tmnt\\runs\\workflow-parent-a5Tuvf\\P-R1-initial-independent-qa-replacement.output.txt",
+  "last30Lines": [
+    "    generatedMessage: true,",
+    "    code: 'ERR_ASSERTION',",
+    "    actual: -2,",
+    "    expected: 0,",
+    "    operator: 'strictEqual',",
+    "    diff: 'simple'",
+    "  }",
+    "",
+    "test at workflow.test.mjs:18:3",
+    "✖ slotLabel: overbooking clamps to zero (0.3971ms)",
+    "  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+    "  + actual - expected",
+    "  ",
+    "  + '-2 slobodnih'",
+    "  - '0 slobodnih'",
+    "  ",
+    "      at TestContext.<anonymous> (file:///F:/Projects/perunapp/.tmnt/runs/workflow-parent-a5Tuvf/workflow.test.mjs:19:12)",
+    "      at Test.runInAsyncScope (node:async_hooks:227:14)",
+    "      at Test.run (node:internal/test_runner/test:1325:25)",
+    "      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)",
+    "      at Test.postRun (node:internal/test_runner/test:1465:19)",
+    "      at Test.run (node:internal/test_runner/test:1390:12)",
+    "      at async Test.processPendingSubtests (node:internal/test_runner/test:911:7) {",
+    "    generatedMessage: true,",
+    "    code: 'ERR_ASSERTION',",
+    "    actual: '-2 slobodnih',",
+    "    expected: '0 slobodnih',",
+    "    operator: 'strictEqual',",
+    "    diff: 'simple'",
+    "  }"
+  ],
+  "hashesBefore": {
+    "remaining-slots.mjs": "80a7c925831299c490edb075565a06a08d8c511de82a7a95a29d66033e98d9f1",
+    "slot-label.mjs": "fa1b32fd84613581e8a309fa81aec84b83b1dfbeca80d3edf5435a372349fbc9",
+    "workflow.test.mjs": "4ac9110cb37bd4df19cff40f709bbc34ac3a8b646a5bbd49e7c3020d66793b23"
+  },
+  "hashesAfter": {
+    "remaining-slots.mjs": "80a7c925831299c490edb075565a06a08d8c511de82a7a95a29d66033e98d9f1",
+    "slot-label.mjs": "fa1b32fd84613581e8a309fa81aec84b83b1dfbeca80d3edf5435a372349fbc9",
+    "workflow.test.mjs": "4ac9110cb37bd4df19cff40f709bbc34ac3a8b646a5bbd49e7c3020d66793b23"
+  },
+  "reviewedFilesUnchanged": true,
+  "protectedBaseline": {
+    "path": "F:\\Projects\\perunapp\\.tmnt\\runs\\workflow-parent-a5Tuvf\\protected-baseline-before-launch.json",
+    "checked": 183,
+    "mismatches": []
+  },
+  "reproduced": true,
+  "status": "QA-found implementation bug",
+  "failures": [
+    {
+      "test": "remainingSlots: overbooking clamps to zero",
+      "actual": -2,
+      "expected": 0
+    },
+    {
+      "test": "slotLabel: overbooking clamps to zero",
+      "actual": "-2 slobodnih",
+      "expected": "0 slobodnih"
+    }
+  ],
+  "next": "Leonardo reopens SAME P-D1; records its one correction retry before dispatch. Mandatory Raphael re-review of unchanged suite against corrected hashes. No retry consumed by this verification.",
+  "timestamp": "2026-11-03T14:10:40.408Z"
+}

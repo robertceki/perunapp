@@ -1,0 +1,25 @@
+{
+  "createdAt": "2026-11-03T14:42:14.673Z",
+  "verifier": "/root",
+  "command": "node --test .tmnt/runs/workflow-parent-a5Tuvf/workflow.test.mjs",
+  "executable": "C:\\Program Files\\nodejs\\node.exe",
+  "cwd": "F:\\Projects\\perunapp",
+  "exitCode": 0,
+  "signal": null,
+  "error": null,
+  "stdout": "✔ remainingSlots: normal availability (0.6486ms)\n✔ slotLabel: normal availability (0.1013ms)\n✔ remainingSlots: zero capacity and bookings (0.5512ms)\n✔ slotLabel: zero capacity and bookings (0.0625ms)\n✔ remainingSlots: exactly full capacity (0.0672ms)\n✔ slotLabel: exactly full capacity (0.0492ms)\n✔ remainingSlots: overbooking clamps to zero (0.049ms)\n✔ slotLabel: overbooking clamps to zero (0.0411ms)\nℹ tests 8\nℹ suites 0\nℹ pass 8\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 61.7121\n",
+  "stderr": "",
+  "hashesBefore": {
+    "remaining-slots.mjs": "3760630efaa5f6daa48e5aaf5f517098addbe87ff7b71d529c022b7e5ee3f917",
+    "workflow.test.mjs": "4ac9110cb37bd4df19cff40f709bbc34ac3a8b646a5bbd49e7c3020d66793b23",
+    "slot-label.mjs": "fa1b32fd84613581e8a309fa81aec84b83b1dfbeca80d3edf5435a372349fbc9"
+  },
+  "hashesAfter": {
+    "remaining-slots.mjs": "3760630efaa5f6daa48e5aaf5f517098addbe87ff7b71d529c022b7e5ee3f917",
+    "workflow.test.mjs": "4ac9110cb37bd4df19cff40f709bbc34ac3a8b646a5bbd49e7c3020d66793b23",
+    "slot-label.mjs": "fa1b32fd84613581e8a309fa81aec84b83b1dfbeca80d3edf5435a372349fbc9"
+  },
+  "currentStateMatchesReview": true,
+  "review": "qa-rereview.json",
+  "result": "pass"
+}
