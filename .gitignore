@@ -34,3 +34,6 @@ supabase/.temp/
 .claude/settings.local.json
 .claude/.verify-pass
 .claude/.verify-log
+
+# Local npm lockfile (project policy)
+/package-lock.json

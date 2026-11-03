@@ -5,6 +5,7 @@
 - Work only in `F:\Projects\perunapp`. Verify the repository root and current Git state before changes.
 - Migration changes belong on `chore/migrate-claude-to-codex`, never on `main`.
 - Do not commit, push, create or switch branches without user authorization.
+- User policy: package-lock.json stays local and ignored. Never stage, commit, force-add or restore tracking for it without an explicit user instruction. Use npm install rather than npm ci in workflows without a tracked lockfile.
 - This is an incremental migration. This file supplies the Codex instruction entry point. Five project role definitions are in `.codex/agents/`; Karpathy skills are in `.agents/skills/`; Windows worker transport is in `.codex/scripts/run-worker.mjs`, launched only by main Codex per `.codex/worker-handoff.md`; the verifier hook is defined in `.codex/hooks.json` and has been trusted in the verified Desktop CLI baseline.
 - Keep `CLAUDE.md`, `.claude/`, and `.tmnt/` intact except for separately authorized changes. Preserve all five roles and at most one automatic retry per task.
 - Existing `.claude/agents/tmnt/*.md` files describe the role contracts. Their Claude metadata, model names, Bash templates, and legacy absolute paths are not native Codex configuration. Do not execute them unchanged or access their external paths. Resolve project references within this repository; report unavailable external context.
