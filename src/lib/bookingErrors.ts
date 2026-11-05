@@ -2,6 +2,7 @@ export const bookingErrorMessages: Record<string, string> = {
   weekly_limit_reached: "Dostigli ste nedeljni limit.",
   session_full: "Termin je popunjen.",
   session_closed: "Termin je trenutno zatvoren za prijave.",
+  session_started: "Trening je počeo. Odjava više nije moguća.",
   already_joined: "Već ste prijavljeni na ovaj termin.",
   not_authenticated: "Niste prijavljeni.",
   account_inactive: "Vaš nalog je deaktiviran. Obratite se administratoru.",

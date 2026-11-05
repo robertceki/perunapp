@@ -119,12 +119,11 @@ export function TrainingProvider({
     async (sessionId: string) => {
       if (!userId) return null;
 
-      const { error } = await supabase
-        .from("session_participants")
-        .delete()
-        .match({ session_id: sessionId, user_id: userId });
+      const { error } = await supabase.rpc("leave_session", {
+        p_session_id: sessionId,
+      });
 
-      if (error) return createBookingError(error.message, false);
+      if (error) return createBookingError(error.message);
 
       await fetchTrainings();
       return null;
